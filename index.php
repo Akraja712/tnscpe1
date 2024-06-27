@@ -53,8 +53,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['center_login'])) {
             $correct_username = $row['center_code'];
             $correct_password = $row['password'];
 
-            // Verify password using password_verify
-            if (password_verify($center_password, $correct_password)) {
+            // Verify password
+            if ($center_password === $correct_password) {
                 // Set session variables
                 $_SESSION['center_code'] = $correct_username; // Store center code in session
                 $_SESSION['center_loggedin'] = true; // Example session variable for center login
@@ -74,7 +74,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['center_login'])) {
 }
 
 $conn->close(); // Close database connection
+
+// Include HTML or display forms here
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
