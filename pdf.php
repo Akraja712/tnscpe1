@@ -9,7 +9,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 $sql_query = "SELECT id,name, pdf_file FROM pdf";
 $result = $conn->query($sql_query);
 
-$base_url = "https://tnscpe.graymatterworks.com/result/";
+$base_url = "https://tnscpe.graymatterworks.com/admin/";
 ?>
 <!DOCTYPE html>
 <html lang="en">
