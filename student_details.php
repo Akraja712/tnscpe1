@@ -174,7 +174,7 @@ $result = $conn->query($sql);
       <div class="card-body">
         <center><h4>Course/Programe Details:</h4></center>
         <br>
-        <img src="https://tnscpe.graymatterworks.com/<?php echo $row['image']; ?>" class="card-img-top float-right" alt="Student Image">
+        <img src="https://tnscpe.graymatterworks.com/admin/<?php echo $row['image']; ?>" class="card-img-top float-right" alt="Student Image">
         <p class="card-text"><strong>Form No:</strong> <?php echo $row['form_no']; ?></p>
         <p class="card-text"><strong>Admission Year:</strong> <?php echo $row['admission_year']; ?></p>
         <p class="card-text"><strong>Registration No:</strong> <?php echo $row['registration_no']; ?></p>
