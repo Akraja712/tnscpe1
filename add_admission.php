@@ -56,7 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $full_path = $target_path . $filename;
         
         if (move_uploaded_file($temp_name, $full_path)) {   
-            $upload_image = '/tnscpe1/admin/' . $target_dir . $filename;
+            $upload_image =  $target_dir . $filename;
 
             // Insert data into the database
             $sql = "INSERT INTO admission (candidate_name, image, fathers_name, mothers_name, dob, gender, category_id, id_proof_type, id_proof_no, employeed, center_id) 
