@@ -214,7 +214,7 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
               <?php foreach ($admissions as $admission): ?>
                 <tr>
                   <td><?php echo $admission['id']; ?></td>
-                  <td><img src="https://tnscpe.graymatterworks.com/<?php echo $admission['image']; ?>" class="img-thumbnail" style="max-width: 100px;"></td>
+                  <td><img src="https://tnscpe.graymatterworks.com/admin/<?php echo $admission['image']; ?>" class="img-thumbnail" style="max-width: 100px;"></td>
                   <td><?php echo $admission['candidate_name']; ?></td>
                   <td><?php echo $admission['fathers_name']; ?></td>
                   <td><?php echo $admission['mothers_name']; ?></td>
