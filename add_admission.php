@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($conn->query($sql) === TRUE) {
                 // Redirect with success message
                 $_SESSION['admission_added'] = true;
-                header("Location: admission.php?status=success");
+                header("Location: admission.php?center_code=" . $_SESSION['center_code']);
                 exit();
             } else {
                 echo '<p class="alert alert-danger">Error: ' . $sql . '<br>' . $conn->error . '</p>';
@@ -95,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 VALUES ('$candidate_name','$fathers_name','$mothers_name','$dob','$gender','$category_id','$id_proof_type','$id_proof_no','$employeed','$center_id')";
         if ($conn->query($sql) === TRUE) {
             // Redirect with success message
-            header("Location: admission.php?status=success");
+            header("Location: admission.php?center_code=" . $_SESSION['center_code']);
             exit();
         } else {
             echo '<p class="alert alert-danger">Error: ' . $sql . '<br>' . $conn->error . '</p>';
