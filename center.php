@@ -155,7 +155,7 @@ if (isset($_GET['center_code'])) {
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="admission.php"><i class="fas fa-poll"></i> Admission</a>
+        <a class="nav-link" href="admission.php?center_code=<?php echo $_SESSION['center_code']; ?>"><i class="fas fa-poll"></i> Admission</a>
        </li>
         <li class="nav-item">
           <a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>

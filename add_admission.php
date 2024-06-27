@@ -4,6 +4,21 @@ require 'db.php'; // Ensure db.php includes your database connection
 
 $DOMAIN_URL = "https://tnscpe.graymatterworks.com/";
 
+// Function to fetch center name by center_code
+function getCenterName($conn, $center_code) {
+    $center_code = mysqli_real_escape_string($conn, $center_code);
+    $sql = "SELECT center_name FROM center WHERE center_code = '$center_code'";
+    $result = $conn->query($sql);
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        return htmlspecialchars($row['center_name']);
+    }
+    return ''; // Return empty string if center_code not found
+}
+
+$center_code = $_GET['center_code'] ?? ''; // Get center_code from URL parameter
+$center_name = getCenterName($conn, $center_code);
+
 // Fetch categories from the database
 $sql_categories = "SELECT id, name FROM category";
 $result_categories = $conn->query($sql_categories);
@@ -27,8 +42,10 @@ $center_options = '';
 if ($result_centers && $result_centers->num_rows > 0) {
     while ($row = $result_centers->fetch_assoc()) {
         $center_id = $row['id'];
-        $center_name = htmlspecialchars($row['center_name']);
-        $center_options .= "<option value='$center_id'>$center_name</option>";
+        $center_name_db = htmlspecialchars($row['center_name']);
+        // Disable the option if it matches the center_name fetched from URL center_code
+        $disabled = ($center_name_db === $center_name) ? 'disabled' : '';
+        $center_options .= "<option value='$center_id' $disabled>$center_name_db</option>";
     }
 }
 
@@ -52,11 +69,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $temp_name = $_FILES["image"]["tmp_name"];
         $extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
         $filename = uniqid() . '.' . strtolower($extension); // Unique filename
-        $target_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/' . $target_dir; // Adjust to include /tnscpe1/admin/
+        $target_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/' . $target_dir; // Adjust to include /admin/
         $full_path = $target_path . $filename;
-        
+
         if (move_uploaded_file($temp_name, $full_path)) {   
-            $upload_image =  $target_dir . $filename;
+            $upload_image = '/admin/' . $target_dir . $filename;
 
             // Insert data into the database
             $sql = "INSERT INTO admission (candidate_name, image, fathers_name, mothers_name, dob, gender, category_id, id_proof_type, id_proof_no, employeed, center_id) 
@@ -89,8 +106,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // Close database connection
 $conn->close();
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -191,7 +206,7 @@ $conn->close();
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="admission.php"><i class="fas fa-poll"></i> Admission</a>
+          <a class="nav-link" href="admission.php?center_code=<?php echo $_SESSION['center_code']; ?>"><i class="fas fa-poll"></i> Admission</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -207,11 +222,10 @@ $conn->close();
           <div class="col">
             Admission Details
           </div>
-        
         </div>
       </div>
       <div class="card-body">
-      <form action="add_admission.php" method="POST" enctype="multipart/form-data">
+        <form action="add_admission.php" method="POST" enctype="multipart/form-data">
           <div class="form-group">
             <input type="text" name="candidate_name" class="form-control" placeholder="Candidate Name" required>
           </div>
@@ -232,23 +246,22 @@ $conn->close();
             </select>
           </div>
           <div class="form-group">
-                        <select name="category_id" class="form-control" required>
-                            <option value="">Select Category</option>
-                            <?php echo $category_options; ?>
-                        </select>
-                    </div>
-                    <div class="form-group">
-    <select name="id_proof_type" class="form-control" required onchange="updateIdProofNumberLength()">
-        <option value="">Select ID Type</option>
-        <option value="aadhaarcard">Aadhaar Card</option>
-        <option value="hsc">HSC</option>
-        <option value="sslc">SSLC</option>
-    </select>
-</div>
-<div class="form-group">
-    <input type="text" name="id_proof_no" class="form-control" placeholder="ID Proof No" required>
-</div>
-
+            <select name="category_id" class="form-control" required>
+              <option value="">Select Category</option>
+              <?php echo $category_options; ?>
+            </select>
+          </div>
+          <div class="form-group">
+            <select name="id_proof_type" class="form-control" required onchange="updateIdProofNumberLength()">
+              <option value="">Select ID Type</option>
+              <option value="aadhaarcard">Aadhaar Card</option>
+              <option value="hsc">HSC</option>
+              <option value="sslc">SSLC</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input type="text" name="id_proof_no" class="form-control" placeholder="ID Proof No" required>
+          </div>
           <div class="form-group">
             <select name="employeed" class="form-control" required>
               <option value="">Employeed?</option>
@@ -257,11 +270,10 @@ $conn->close();
             </select>
           </div>
           <div class="form-group">
-    <select name="center_id" class="form-control" required>
-        <option value="">Select Center</option>
-        <?php echo $center_options; ?>
-    </select>
-</div>
+            <!-- Display center name and hide the dropdown (no need for a select box) -->
+            <input type="text" class="form-control" value="<?php echo $center_name; ?>" disabled>
+            <input type="hidden" name="center_id" value="<?php echo $center_id; ?>">
+          </div>
           <div class="form-group">
             <input type="file" name="image" class="form-control-file" accept="image/*" required>
           </div>
@@ -277,26 +289,35 @@ $conn->close();
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
   <script>
     function updateIdProofNumberLength() {
-        var idProofType = document.getElementsByName('id_proof_type')[0].value;
-        var idProofNoInput = document.getElementsByName('id_proof_no')[0];
+      var idProofType = document.getElementsByName('id_proof_type')[0].value;
+      var idProofNoInput = document.getElementsByName('id_proof_no')[0];
 
-        if (idProofType === 'aadhaarcard') {
-            idProofNoInput.setAttribute('maxlength', '12');
-            idProofNoInput.setAttribute('minlength', '12');
-        } else if (idProofType === 'hsc') {
-            idProofNoInput.setAttribute('maxlength', '6');
-            idProofNoInput.setAttribute('minlength', '6');
-        } else if (idProofType === 'sslc') {
-            idProofNoInput.setAttribute('maxlength', '7');
-            idProofNoInput.setAttribute('minlength', '7');
-        } else {
-            idProofNoInput.removeAttribute('maxlength');
-            idProofNoInput.removeAttribute('minlength');
-        }
+      if (idProofType === 'aadhaarcard') {
+        idProofNoInput.setAttribute('maxlength', '12');
+        idProofNoInput.setAttribute('minlength', '12');
+      } else if (idProofType === 'hsc') {
+        idProofNoInput.setAttribute('maxlength', '6');
+        idProofNoInput.setAttribute('minlength', '6');
+      } else if (idProofType === 'sslc') {
+        idProofNoInput.setAttribute('maxlength', '7');
+        idProofNoInput.setAttribute('minlength', '7');
+      } else {
+        idProofNoInput.removeAttribute('maxlength');
+        idProofNoInput.removeAttribute('minlength');
+      }
     }
-</script>
+  </script>
 
+  <script>
+    // Disable selected center option after selection
+    document.getElementsByName('center_id')[0].addEventListener('change', function() {
+      var selectedOption = this.options[this.selectedIndex];
+      selectedOption.disabled = true;
 
+      // Optional: Reset the select to the default option after selection
+      this.value = '';
+    });
+  </script>
 
 </body>
 </html>

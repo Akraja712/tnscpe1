@@ -167,7 +167,7 @@ if (isset($_POST['btnAdd'])) {
                                     </div>
                                     <div class='col-md-3'>
                                         <label for="password">Password</label> <i class="text-danger asterik">*</i><?php echo isset($error['password']) ? $error['password'] : ''; ?>
-                                        <input type="password" class="form-control" name="password" id="password" required>
+                                        <input type="text" class="form-control" name="password" id="password" required>
                                     </div>
                                 </div>
                             </div>

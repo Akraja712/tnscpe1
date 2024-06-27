@@ -9,41 +9,62 @@ $records_per_page = 10; // Number of records to display per page
 // Calculate the starting record for the query based on pagination
 $start_from = ($page - 1) * $records_per_page;
 
-// Fetch admission details from the database with category name and center name
-$sql = "SELECT a.*, c.name AS category_name, ce.center_name
-        FROM admission a
-        LEFT JOIN category c ON a.category_id = c.id
-        LEFT JOIN center ce ON a.center_id = ce.id
-        ORDER BY a.id DESC
-        LIMIT $start_from, $records_per_page";
+// Fetch center_name from center table based on center_code
+$center_code = isset($_GET['center_code']) ? $_GET['center_code'] : '';
+$center_code = mysqli_real_escape_string($conn, $center_code);
 
-$result = $conn->query($sql);
+$sql_center = "SELECT center_name, id FROM center WHERE center_code = '$center_code'";
+$result_center = $conn->query($sql_center);
 
-// Check if query was successful
-if ($result && $result->num_rows > 0) {
-    // Admission details found
-    // Fetch all rows and store in an array
-    $admissions = $result->fetch_all(MYSQLI_ASSOC);
+if ($result_center && $result_center->num_rows > 0) {
+    $row_center = $result_center->fetch_assoc();
+    $center_name = htmlspecialchars($row_center['center_name']);
+    $center_id = $row_center['id'];
+
+    // Fetch admission details from the database with category name and center name
+    $sql = "SELECT a.*, c.name AS category_name, ce.center_name
+            FROM admission a
+            LEFT JOIN category c ON a.category_id = c.id
+            LEFT JOIN center ce ON a.center_id = ce.id
+            WHERE a.center_id = $center_id
+            ORDER BY a.id DESC
+            LIMIT $start_from, $records_per_page";
+
+    $result = $conn->query($sql);
+
+    // Check if query was successful
+    if ($result && $result->num_rows > 0) {
+        // Admission details found
+        // Fetch all rows and store in an array
+        $admissions = $result->fetch_all(MYSQLI_ASSOC);
+    } else {
+        // No admission details found
+        $admissions = [];
+    }
+
+    // Count total number of records for pagination
+    $total_records_sql = "SELECT COUNT(*) AS total_records FROM admission WHERE center_id = $center_id";
+    $total_records_result = $conn->query($total_records_sql);
+
+    if ($total_records_result) {
+        $total_records = $total_records_result->fetch_assoc()['total_records'];
+        // Calculate total pages
+        $total_pages = ceil($total_records / $records_per_page);
+    } else {
+        $total_records = 0;
+        $total_pages = 1; // Default to 1 page if no records or error
+    }
 } else {
-    // No admission details found
+    // Center not found or invalid center_code
+    $center_name = ''; // Set default center name or handle as needed
+    $center_id = 0; // Set default center id or handle as needed
     $admissions = [];
-}
-
-// Count total number of records for pagination
-$total_records_sql = "SELECT COUNT(*) AS total_records FROM admission";
-$total_records_result = $conn->query($total_records_sql);
-
-if ($total_records_result) {
-    $total_records = $total_records_result->fetch_assoc()['total_records'];
-    // Calculate total pages
-    $total_pages = ceil($total_records / $records_per_page);
-} else {
     $total_records = 0;
-    $total_pages = 1; // Default to 1 page if no records or error
+    $total_pages = 1;
 }
 
 // Define current URL with pagination parameter
-$url = $_SERVER['PHP_SELF'];
+$url = $_SERVER['PHP_SELF'] . "?center_code=$center_code";
 
 // Close the database connection
 $conn->close();
@@ -58,7 +79,6 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
     unset($_SESSION['admission_added']);
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,7 +180,7 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="admission.php"><i class="fas fa-poll"></i> Admission</a>
+          <a class="nav-link" href="admission.php?center_code=<?php echo $_SESSION['center_code']; ?>"><i class="fas fa-poll"></i> Admission</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -187,7 +207,7 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
             Admission Details
           </div>
           <div class="col text-right">
-            <a href="add_admission.php" class="btn btn-admission">New Admission</a>
+            <a href="add_admission.php?center_code=<?php echo $_SESSION['center_code']; ?>" class="btn btn-admission">New Admission</a>
           </div>
         </div>
       </div>
