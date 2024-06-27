@@ -161,12 +161,11 @@ if (!isset($res[0])) {
                         <br>
                         <div class="row">
                             <div class="form-group">
-                                <div class="col-md-4">
-                                    <label for="image">Photo</label>
-                                    <?php echo isset($error['image']) ? $error['image'] : ''; ?>
-                                    <input type="file" name="image" onchange="readURL(this);" accept="image/png, image/jpeg" id="image" required/><br>
-                                    <img id="blah" src="<?php echo isset($res[0]['image']) ? $res[0]['image'] : ''; ?>" alt="Current Image" style="display:block; max-width:150px; max-height:200px;">
-                                </div>
+                            <div class="col-md-4">
+                                <label for="image">Photo</label> <i class="text-danger asterik">*</i><?php echo isset($error['image']) ? $error['image'] : ''; ?>
+                                <input type="file" name="image" onchange="readURL(this);" accept="image/png,  image/jpeg" id="image" /><br>
+                                <img id="blah" src="<?php echo $res[0]['image']; ?>" alt="" style="display:block; width:150px; height:200px;"/>
+                            </div>
                             </div>
                         </div>
                     </div>
