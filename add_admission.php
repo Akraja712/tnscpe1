@@ -147,7 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       }
       return '';
   }
-  $root_dir = $_SERVER['DOCUMENT_ROOT'] . '/tnscpe1/';
+  $root_dir = $_SERVER['DOCUMENT_ROOT'] . '/admin/';
 
   // Handle image upload into admin/images/
   $image = handle_upload('image', 'images/', $root_dir, 'image');
