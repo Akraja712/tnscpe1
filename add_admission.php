@@ -114,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if (isset($_FILES[$file_input_name]) && $_FILES[$file_input_name]['error'] == 0) {
           $file_name = $_FILES[$file_input_name]['name'];
           $temp_name = $_FILES[$file_input_name]['tmp_name'];
-          $target_path = $root_directory . '/' . $target_directory . basename($file_name);
+          $target_path = $root_directory . '/admin/' . $target_directory . basename($file_name);
   
           if (move_uploaded_file($temp_name, $target_path)) {
               $upload_path = $target_directory . basename($file_name);
