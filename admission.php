@@ -3,7 +3,7 @@ session_start();
 require 'db.php'; // Ensure db.php includes your database connection
 
 // Initialize variables for pagination
-$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $records_per_page = 10; // Number of records to display per page
 
 // Calculate the starting record for the query based on pagination
@@ -94,15 +94,26 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
   <!-- Google Fonts - Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Custom CSS for the student details page */
-    body {
+    /* Custom CSS for the student details page */    #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100%;
+     
+      }
+      body {
       font-family: 'Poppins', sans-serif;
       background-color: #f8f9fa;
       margin: 0;
     }
-    .container {
-      padding: 20px;
-      max-width: 100%;
+      .btn-admission {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 5px;
+      cursor: pointer;
     }
     .card {
       border: none;
@@ -119,75 +130,81 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
     .card-body {
       padding: 20px;
     }
-    .table-container {
-      margin-top: 20px;
+    .container {
+      padding: 20px;
+      max-width: 100%;
     }
-    .btn-admission {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .navbar {
-      background-color: #343a40;
-      padding: 15px 0;
-      z-index: 100;
-    }
-    .navbar-brand {
-      color: white;
-      display: flex;
-      align-items: center; /* Align items vertically */
-    }
-    .navbar-brand img {
-      width: 50px; /* Set logo width */
-      height: 50px; /* Ensure height matches width for a perfect circle */
-      border-radius: 50%; /* Make the image circular */
-      margin-right: 10px; /* Adjust margin as needed */
-    }
-    .navbar-nav {
-      margin-left: auto;
-    }
-    .navbar-nav .nav-item .nav-link {
-      color: white;
-      padding: 10px 15px;
-    }
-    .navbar-nav .nav-item:first-child .nav-link {
-      margin-left: 0; /* Remove left margin for first item */
-    }
-    .navbar-dark .navbar-nav .nav-link:hover {
-      color: #ced4da;
+    @media (max-width: 768px) {
+      #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100%;
+        transform: translateX(-250px);
+        transition: transform 0.3s ease-in-out;
+        z-index: 1050; /* Ensure it's above other content */
+      }
+      #sidebar.open {
+        transform: translateX(0);
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1040; /* Just below the sidebar */
+      }
+      .overlay.show {
+        display: block;
+      }
     }
   </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <a class="navbar-brand" href="#">
-      <img src="image/logo.jpeg" alt="Logo"> <!-- Replace with your logo image -->
-      TNSCPE
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto">
+<div class="container-fluid">
+  <div class="row">
+    <!-- Overlay for sidebar -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar">
+      <div class="sidebar-sticky">
+        <div class="navbar-brand d-flex align-items-center">
+          <img src="image/logo.jpeg" alt="Logo" style="width: 50px; height: 50px; border-radius: 50%;">
+          <span class="ml-2" style="color: white;">TNSCPE</span>
+        </div>
+        <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" href="center.php?center_code=<?php echo $_SESSION['center_code']; ?>">
+        <a class="nav-link" style="color: white;" href="center.php?center_code=<?php echo $_SESSION['center_code']; ?>">
             <i class="fas fa-building"></i> Center Profile
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="admission.php?center_code=<?php echo $_SESSION['center_code']; ?>"><i class="fas fa-poll"></i> Admission</a>
-        </li>
+        <a class="nav-link" style="color: white;" href="admission.php?center_code=<?php echo $_SESSION['center_code']; ?>"><i class="fas fa-poll"></i> Admission</a>
+       </li>
         <li class="nav-item">
-          <a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          <a class="nav-link" style="color: white;" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </li>
-      </ul>
-    </div>
-  </nav>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+      <!-- Menu toggle button for mobile -->
+      <div class="d-flex justify-content-between align-items-center bg-dark p-3 d-md-none">
+        <div class="d-flex align-items-center">
+          <img src="image/logo.jpeg" alt="Logo" style="width: 50px; height: 50px; border-radius: 50%;">
+          <span class="ml-2" style="color: white;">TNSCPE</span>
+        </div>
+        <button class="btn btn-dark" type="button" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
 
   <div class="container">
   <?php if (!empty($success_message)): ?>
@@ -219,15 +236,11 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
                 <th>ID</th>
                 <th>Photo</th>
                 <th>Candidate Name</th>
-                <th>Father's Name</th>
-                <th>Mother's Name</th>
                 <th>Date of Birth</th>
                 <th>Gender</th>
-                <th>Category Name</th>
-                <th>Id Proof Type</th>
-                <th>Id Proof No</th>
                 <th>Center Name</th>
                 <th>Employeed</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -236,13 +249,8 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
                   <td><?php echo $admission['id']; ?></td>
                   <td><img src="https://tnscpe.graymatterworks.com/admin/<?php echo $admission['image']; ?>" class="img-thumbnail" style="max-width: 100px;"></td>
                   <td><?php echo $admission['candidate_name']; ?></td>
-                  <td><?php echo $admission['fathers_name']; ?></td>
-                  <td><?php echo $admission['mothers_name']; ?></td>
                   <td><?php echo $admission['dob']; ?></td>
                   <td><?php echo $admission['gender']; ?></td>
-                  <td><?php echo $admission['category_name']; ?></td>
-                  <td><?php echo $admission['id_proof_type']; ?></td>
-                  <td><?php echo $admission['id_proof_no']; ?></td>
                   <td><?php echo $admission['center_name']; ?></td>
                   <td>
                     <?php
@@ -269,7 +277,7 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
     <ul class="pagination justify-content-center">
       <!-- Previous Page Link -->
       <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
-        <a class="page-link" href="<?php echo $url . '?page=' . ($page - 1); ?>" aria-label="Previous">
+        <a class="page-link" href="<?php echo $url . '&page=' . ($page - 1); ?>" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
           <span class="sr-only">Previous</span>
         </a>
@@ -283,13 +291,13 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
       $end_page = min($total_pages, $start_page + $num_links - 1);
 
       for ($i = $start_page; $i <= $end_page; $i++) {
-        echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '"><a class="page-link" href="' . $url . '?page=' . $i . '">' . $i . '</a></li>';
+        echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '"><a class="page-link" href="' . $url . '&page=' . $i . '">' . $i . '</a></li>';
       }
       ?>
 
       <!-- Next Page Link -->
       <li class="page-item <?php echo ($page >= $total_pages) ? 'disabled' : ''; ?>">
-        <a class="page-link" href="<?php echo $url . '?page=' . ($page + 1); ?>" aria-label="Next">
+        <a class="page-link" href="<?php echo $url . '&page=' . ($page + 1); ?>" aria-label="Next">
           <span aria-hidden="true">&raquo;</span>
           <span class="sr-only">Next</span>
         </a>
@@ -302,6 +310,14 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
   <!-- Bootstrap Table JS -->
+  <script>
+  function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  }
+</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.18.3/bootstrap-table.min.js"></script>
 </body>
 </html>

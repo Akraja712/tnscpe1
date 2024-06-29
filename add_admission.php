@@ -54,57 +54,97 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $candidate_name = mysqli_real_escape_string($conn, $_POST['candidate_name']);
     $fathers_name = mysqli_real_escape_string($conn, $_POST['fathers_name']);
     $mothers_name = mysqli_real_escape_string($conn, $_POST['mothers_name']);
-    $dob = mysqli_real_escape_string($conn, $_POST['dob']); // Use mysqli_real_escape_string for all inputs
+    $dob = mysqli_real_escape_string($conn, $_POST['dob']);
     $gender = mysqli_real_escape_string($conn, $_POST['gender']);
     $category_id = mysqli_real_escape_string($conn, $_POST['category_id']);
     $id_proof_type = mysqli_real_escape_string($conn, $_POST['id_proof_type']);
     $id_proof_no = mysqli_real_escape_string($conn, $_POST['id_proof_no']);
     $employeed = ($_POST['employeed'] == 'Yes') ? 1 : 0;
     $center_id = mysqli_real_escape_string($conn, $_POST['center_id']);
+    $contact_number = mysqli_real_escape_string($conn, $_POST['contact_number']);
+    $email = mysqli_real_escape_string($conn, $_POST['email']);
+    $fathers_contact_number = mysqli_real_escape_string($conn, $_POST['fathers_contact_number']);
+    $mothers_contact_number = mysqli_real_escape_string($conn, $_POST['mothers_contact_number']);
+    $country = mysqli_real_escape_string($conn, $_POST['country']);
+    $nationality = mysqli_real_escape_string($conn, $_POST['nationality']);
+    $state = mysqli_real_escape_string($conn, $_POST['state']);
+    $city = mysqli_real_escape_string($conn, $_POST['city']);
+    $address = mysqli_real_escape_string($conn, $_POST['address']);
+    $pincode = mysqli_real_escape_string($conn, $_POST['pincode']);
 
-    // Handle image upload
-    if ($_FILES['image']['size'] != 0 && $_FILES['image']['error'] == 0 && !empty($_FILES['image'])) {
-        // Process image upload
-        $target_dir = "upload/images/"; // Adjust to your project structure relative to the document root
-        $temp_name = $_FILES["image"]["tmp_name"];
-        $extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
-        $filename = uniqid() . '.' . strtolower($extension); // Unique filename
-        $target_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/' . $target_dir; // Adjust to include /admin/
-        $full_path = $target_path . $filename;
+    // Qualification details
+    $secondary_year_passing = mysqli_real_escape_string($conn, $_POST['secondary_year_passing']);
+    $secondary_board_university = mysqli_real_escape_string($conn, $_POST['secondary_board_university']);
+    $secondary_percentage_cgpa = mysqli_real_escape_string($conn, $_POST['secondary_percentage_cgpa']);
+    $secondary_document = mysqli_real_escape_string($conn, $_POST['secondary_document']);
+    $senior_secondary_year_passing = mysqli_real_escape_string($conn, $_POST['senior_secondary_year_passing']);
+    $senior_secondary_board_university = mysqli_real_escape_string($conn, $_POST['senior_secondary_board_university']);
+    $senior_secondary_percentage_cgpa = mysqli_real_escape_string($conn, $_POST['senior_secondary_percentage_cgpa']);
+    $senior_secondary_document = mysqli_real_escape_string($conn, $_POST['senior_secondary_document']);
+    $graduation_year_passing = mysqli_real_escape_string($conn, $_POST['graduation_year_passing']);
+    $graduation_board_university = mysqli_real_escape_string($conn, $_POST['graduation_board_university']);
+    $graduation_percentage_cgpa = mysqli_real_escape_string($conn, $_POST['graduation_percentage_cgpa']);
+    $graduation_document = mysqli_real_escape_string($conn, $_POST['graduation_document']);
+    $post_graduation_year_passing = mysqli_real_escape_string($conn, $_POST['post_graduation_year_passing']);
+    $post_graduation_board_university = mysqli_real_escape_string($conn, $_POST['post_graduation_board_university']);
+    $post_graduation_percentage_cgpa = mysqli_real_escape_string($conn, $_POST['post_graduation_percentage_cgpa']);
+    $post_graduation_document = mysqli_real_escape_string($conn, $_POST['post_graduation_document']);
+    $other_year_passing = mysqli_real_escape_string($conn, $_POST['other_year_passing']);
+    $other_board_university = mysqli_real_escape_string($conn, $_POST['other_board_university']);
+    $other_percentage_cgpa = mysqli_real_escape_string($conn, $_POST['other_percentage_cgpa']);
+    $other_document = mysqli_real_escape_string($conn, $_POST['other_document']);
 
-        if (move_uploaded_file($temp_name, $full_path)) {   
-            $upload_image =  $target_dir . $filename;
+    // Program details
+    $course_type = mysqli_real_escape_string($conn, $_POST['course_type']);
+    $faculty = mysqli_real_escape_string($conn, $_POST['faculty']);
+    $course = mysqli_real_escape_string($conn, $_POST['course']);
+    $stream = mysqli_real_escape_string($conn, $_POST['stream']);
+    $year = mysqli_real_escape_string($conn, $_POST['year']);
+    $month = mysqli_real_escape_string($conn, $_POST['month']);
+    $mode_of_study = mysqli_real_escape_string($conn, $_POST['mode_of_study']);
+    $hostel_facility = ($_POST['hostel_facility'] == 'Yes') ? 1 : 0;
+    $application_fees = mysqli_real_escape_string($conn, $_POST['application_fees']);
+    $duration = mysqli_real_escape_string($conn, $_POST['duration']);
+    $total_fees = mysqli_real_escape_string($conn, $_POST['total_fees']);
+    $paying_fees = mysqli_real_escape_string($conn, $_POST['paying_fees']);
 
-            // Insert data into the database
-            $sql = "INSERT INTO admission (candidate_name, image, fathers_name, mothers_name, dob, gender, category_id, id_proof_type, id_proof_no, employeed, center_id) 
-                    VALUES ('$candidate_name', '$upload_image','$fathers_name','$mothers_name','$dob','$gender','$category_id','$id_proof_type','$id_proof_no','$employeed','$center_id')";
-            if ($conn->query($sql) === TRUE) {
-                // Redirect with success message
-                $_SESSION['admission_added'] = true;
-                header("Location: admission.php?center_code=" . $_SESSION['center_code']);
-                exit();
-            } else {
-                echo '<p class="alert alert-danger">Error: ' . $sql . '<br>' . $conn->error . '</p>';
-            }
-        } else {
-            echo '<p class="alert alert-danger">Failed to upload image.</p>';
-        }
-    } else {
-        // If the image is not uploaded or empty
-        $sql = "INSERT INTO admission (candidate_name, fathers_name, mothers_name, dob, gender, category_id, id_proof_type, id_proof_no, employeed, center_id) 
-                VALUES ('$candidate_name','$fathers_name','$mothers_name','$dob','$gender','$category_id','$id_proof_type','$id_proof_no','$employeed','$center_id')";
-        if ($conn->query($sql) === TRUE) {
-            // Redirect with success message
-            header("Location: admission.php?center_code=" . $_SESSION['center_code']);
-            exit();
-        } else {
-            echo '<p class="alert alert-danger">Error: ' . $sql . '<br>' . $conn->error . '</p>';
-        }
-    }
+    // Function to handle document uploads
+    function handle_upload($file_input_name, $target_dir, $root_dir) {
+      if ($_FILES[$file_input_name]['size'] != 0 && $_FILES[$file_input_name]['error'] == 0 && !empty($_FILES[$file_input_name])) {
+          $temp_name = $_FILES[$file_input_name]["tmp_name"];
+          $extension = pathinfo($_FILES[$file_input_name]["name"], PATHINFO_EXTENSION);
+          $filename = uniqid() . '.' . strtolower($extension);
+          $target_path = $root_dir . '/' . $target_dir . $filename;
+          if (move_uploaded_file($temp_name, $target_path)) {
+              return $target_dir . $filename;
+          }
+      }
+      return '';
+  }
+
+  $root_dir = $_SERVER['DOCUMENT_ROOT'] . '/admin/';
+  $image = handle_upload('image', 'upload/images/', $root_dir);
+  $secondary_document = handle_upload('secondary_document', 'upload/documents/', $root_dir);
+  $senior_secondary_document = handle_upload('senior_secondary_document', 'upload/documents/', $root_dir);
+  $graduation_document = handle_upload('graduation_document', 'upload/documents/', $root_dir);
+  $post_graduation_document = handle_upload('post_graduation_document', 'upload/documents/', $root_dir);
+  $other_document = handle_upload('other_document', 'upload/documents/', $root_dir);
+            $sql = "INSERT INTO admission (candidate_name, image, fathers_name, mothers_name, dob, gender, category_id, id_proof_type, id_proof_no, employeed, center_id, contact_number, email, fathers_contact_number, mothers_contact_number, country, nationality, state, city, address, pincode, secondary_year_passing, secondary_board_university, secondary_percentage_cgpa, secondary_document, senior_secondary_year_passing, senior_secondary_board_university, senior_secondary_percentage_cgpa, senior_secondary_document, graduation_year_passing, graduation_board_university, graduation_percentage_cgpa, graduation_document, post_graduation_year_passing, post_graduation_board_university, post_graduation_percentage_cgpa, post_graduation_document, other_year_passing, other_board_university, other_percentage_cgpa, other_document, course_type, faculty, course, stream, year,month, mode_of_study, hostel_facility, application_fees, duration, total_fees, paying_fees) 
+            VALUES ('$candidate_name', '$upload_image', '$fathers_name', '$mothers_name', '$dob', '$gender', '$category_id', '$id_proof_type', '$id_proof_no', '$employeed', '$center_id', '$contact_number', '$email', '$fathers_contact_number', '$mothers_contact_number', '$country', '$nationality', '$state', '$city', '$address', '$pincode', '$secondary_year_passing', '$secondary_board_university', '$secondary_percentage_cgpa', '$secondary_document', '$senior_secondary_year_passing', '$senior_secondary_board_university', '$senior_secondary_percentage_cgpa', '$senior_secondary_document', '$graduation_year_passing', '$graduation_board_university', '$graduation_percentage_cgpa', '$graduation_document', '$post_graduation_year_passing', '$post_graduation_board_university', '$post_graduation_percentage_cgpa', '$post_graduation_document', '$other_year_passing', '$other_board_university', '$other_percentage_cgpa', '$other_document', '$course_type', '$faculty', '$course', '$stream', '$year','$month', '$mode_of_study', '$hostel_facility', '$application_fees', '$duration', '$total_fees', '$paying_fees')";
+
+if ($conn->query($sql) === TRUE) {
+  // Redirect with success message
+  $_SESSION['admission_added'] = true;
+  header("Location: admission.php?center_code=" . $_SESSION['center_code']);
+  exit();
+} else {
+  echo '<p class="alert alert-danger">Error: ' . $sql . '<br>' . $conn->error . '</p>';
+}
 }
 
 // Close database connection
 $conn->close();
+?>>close();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -155,133 +195,435 @@ $conn->close();
       border-radius: 5px;
       cursor: pointer;
     }
-    .navbar {
-      background-color: #343a40;
-      padding: 15px 0;
-      z-index: 100;
-    }
-    .navbar-brand {
-      color: white;
-      display: flex;
-      align-items: center; /* Align items vertically */
-    }
-    .navbar-brand img {
-      width: 50px; /* Set logo width */
-      height: 50px; /* Ensure height matches width for a perfect circle */
-      border-radius: 50%; /* Make the image circular */
-      margin-right: 10px; /* Adjust margin as needed */
-    }
-    .navbar-nav {
-      margin-left: auto;
-    }
-    .navbar-nav .nav-item .nav-link {
-      color: white;
-      padding: 10px 15px;
-    }
-    .navbar-nav .nav-item:first-child .nav-link {
-      margin-left: 0; /* Remove left margin for first item */
-    }
-    .navbar-dark .navbar-nav .nav-link:hover {
-      color: #ced4da;
+    #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100%;
+     
+      }
+    @media (max-width: 768px) {
+      #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100%;
+        transform: translateX(-250px);
+        transition: transform 0.3s ease-in-out;
+        z-index: 1050; /* Ensure it's above other content */
+      }
+      #sidebar.open {
+        transform: translateX(0);
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1040; /* Just below the sidebar */
+      }
+      .overlay.show {
+        display: block;
+      }
     }
   </style>
-
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    &nbsp;&nbsp;&nbsp;&nbsp;
-    <a class="navbar-brand" href="#">
-      <img src="image/logo.jpeg" alt="Logo"> <!-- Replace with your logo image -->
-      TNSCPE
-    </a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto">
+<div class="container-fluid">
+  <div class="row">
+    <!-- Overlay for sidebar -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar">
+      <div class="sidebar-sticky">
+        <div class="navbar-brand d-flex align-items-center">
+          <img src="image/logo.jpeg" alt="Logo" style="width: 50px; height: 50px; border-radius: 50%;">
+          <span class="ml-2" style="color: white;">TNSCPE</span>
+        </div>
+        <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" href="center.php?center_code=<?php echo $_SESSION['center_code']; ?>">
+        <a class="nav-link" style="color: white;" href="center.php?center_code=<?php echo $_SESSION['center_code']; ?>">
             <i class="fas fa-building"></i> Center Profile
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="admission.php?center_code=<?php echo $_SESSION['center_code']; ?>"><i class="fas fa-poll"></i> Admission</a>
-        </li>
+        <a class="nav-link" style="color: white;" href="admission.php?center_code=<?php echo $_SESSION['center_code']; ?>"><i class="fas fa-poll"></i> Admission</a>
+       </li>
         <li class="nav-item">
-          <a class="nav-link" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
+          <a class="nav-link" style="color: white;" href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </li>
-      </ul>
-    </div>
-  </nav>
+        </ul>
+      </div>
+    </nav>
 
-  <div class="container">
-    <div class="card">
-      <div class="card-header">
-        <div class="row">
-          <div class="col">
-            Admission Details
+    <!-- Main content -->
+    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+      <!-- Menu toggle button for mobile -->
+      <div class="d-flex justify-content-between align-items-center bg-dark p-3 d-md-none">
+        <div class="d-flex align-items-center">
+          <img src="image/logo.jpeg" alt="Logo" style="width: 50px; height: 50px; border-radius: 50%;">
+          <span class="ml-2" style="color: white;">TNSCPE</span>
+        </div>
+        <button class="btn btn-dark" type="button" onclick="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <div class="container">
+  <div class="card">
+    <div class="card-header">
+      <div class="row">
+        <div class="col">
+          Admission Details
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form action="add_admission.php" method="POST" enctype="multipart/form-data">
+        <div class="form-row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="text" name="candidate_name" class="form-control" placeholder="Candidate Name" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="text" name="fathers_name" class="form-control" placeholder="Father's Name" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="text" name="mothers_name" class="form-control" placeholder="Mother's Name" required>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="date" name="dob" class="form-control" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <select name="gender" class="form-control" required>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <select name="category_id" class="form-control" required>
+                <option value="">Select Category</option>
+                <?php echo $category_options; ?>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <select name="id_proof_type" class="form-control" required onchange="updateIdProofNumberLength()">
+                <option value="">Select ID Type</option>
+                <option value="aadhaarcard">Aadhaar Card</option>
+                <option value="hsc">HSC</option>
+                <option value="sslc">SSLC</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="text" name="id_proof_no" class="form-control" placeholder="ID Proof No" required>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <select name="employeed" class="form-control" required>
+                <option value="">Employeed?</option>
+                <option value="1">Yes</option>
+                <option value="0">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="text" class="form-control" value="<?php echo $center_name; ?>" disabled>
+              <input type="hidden" name="center_id" value="<?php echo $center_id; ?>">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="file" name="image" class="form-control-file" accept="image/*" required>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  <div class="card mt-3">
+    <div class="card-header">
+      <div class="row">
+        <div class="col">
+          Contact Details
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <input type="text" name="contact_number" class="form-control" placeholder="Contact Number" required>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <input type="email" name="email" class="form-control" placeholder="Email" required>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <input type="text" name="fathers_contact_number" class="form-control" placeholder="Father's Contact Number" required>
           </div>
         </div>
       </div>
-      <div class="card-body">
-        <form action="add_admission.php" method="POST" enctype="multipart/form-data">
+      <div class="form-row">
+        <div class="col-md-4">
           <div class="form-group">
-            <input type="text" name="candidate_name" class="form-control" placeholder="Candidate Name" required>
+            <input type="text" name="mothers_contact_number" class="form-control" placeholder="Mother's Contact Number" required>
           </div>
+        </div>
+        <div class="col-md-4">
           <div class="form-group">
-            <input type="text" name="fathers_name" class="form-control" placeholder="Father's Name" required>
+            <input type="text" name="country" class="form-control" placeholder="Country" required>
           </div>
+        </div>
+        <div class="col-md-4">
           <div class="form-group">
-            <input type="text" name="mothers_name" class="form-control" placeholder="Mother's Name" required>
+            <input type="text" name="nationality" class="form-control" placeholder="Nationality" required>
           </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-4">
           <div class="form-group">
-            <input type="date" name="dob" class="form-control" required>
+            <input type="text" name="state" class="form-control" placeholder="State" required>
           </div>
+        </div>
+        <div class="col-md-4">
           <div class="form-group">
-            <select name="gender" class="form-control" required>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
+            <input type="text" name="city" class="form-control" placeholder="City" required>
           </div>
+        </div>
+        <div class="col-md-4">
           <div class="form-group">
-            <select name="category_id" class="form-control" required>
-              <option value="">Select Category</option>
-              <?php echo $category_options; ?>
-            </select>
+            <input type="text" name="address" class="form-control" placeholder="Address" required>
           </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-4">
           <div class="form-group">
-            <select name="id_proof_type" class="form-control" required onchange="updateIdProofNumberLength()">
-              <option value="">Select ID Type</option>
-              <option value="aadhaarcard">Aadhaar Card</option>
-              <option value="hsc">HSC</option>
-              <option value="sslc">SSLC</option>
-            </select>
+            <input type="text" name="pincode" class="form-control" placeholder="Pincode" required>
           </div>
-          <div class="form-group">
-            <input type="text" name="id_proof_no" class="form-control" placeholder="ID Proof No" required>
-          </div>
-          <div class="form-group">
-            <select name="employeed" class="form-control" required>
-              <option value="">Employeed?</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <!-- Display center name and hide the dropdown (no need for a select box) -->
-            <input type="text" class="form-control" value="<?php echo $center_name; ?>" disabled>
-            <input type="hidden" name="center_id" value="<?php echo $center_id; ?>">
-          </div>
-          <div class="form-group">
-            <input type="file" name="image" class="form-control-file" accept="image/*" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
+        </div>
       </div>
     </div>
   </div>
+  
+  <div class="card mt-3">
+    <div class="card-header">
+      <div class="row">
+        <div class="col">
+          Qualification Details
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Examination</th>
+              <th>Year & Passing</th>
+              <th>Board/University</th>
+              <th>Percentage/CGPA</th>
+              <th>Upload Document</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Secondary</td>
+              <td><input type="text" name="secondary_year_passing" class="form-control" required></td>
+              <td><input type="text" name="secondary_board_university" class="form-control" required></td>
+              <td><input type="text" name="secondary_percentage_cgpa" class="form-control" required></td>
+              <td><input type="file" name="secondary_document" class="form-control-file" accept=".pdf,.doc,.docx" required></td>
+            </tr>
+            <tr>
+              <td>Senior Secondary</td>
+              <td><input type="text" name="senior_secondary_year_passing" class="form-control" required></td>
+              <td><input type="text" name="senior_secondary_board_university" class="form-control" required></td>
+              <td><input type="text" name="senior_secondary_percentage_cgpa" class="form-control" required></td>
+              <td><input type="file" name="senior_secondary_document" class="form-control-file" accept=".pdf,.doc,.docx" required></td>
+            </tr>
+            <tr>
+              <td>Graduation</td>
+              <td><input type="text" name="graduation_year_passing" class="form-control" ></td>
+              <td><input type="text" name="graduation_board_university" class="form-control" ></td>
+              <td><input type="text" name="graduation_percentage_cgpa" class="form-control" ></td>
+              <td><input type="file" name="graduation_document" class="form-control-file" accept=".pdf,.doc,.docx" ></td>
+            </tr>
+            <tr>
+              <td>Post Graduation</td>
+              <td><input type="text" name="post_graduation_year_passing" class="form-control"></td>
+              <td><input type="text" name="post_graduation_board_university" class="form-control"></td>
+              <td><input type="text" name="post_graduation_percentage_cgpa" class="form-control"></td>
+              <td><input type="file" name="post_graduation_document" class="form-control-file" accept=".pdf,.doc,.docx"></td>
+            </tr>
+            <tr>
+                    <td>Other</td>
+                    <td><input type="text" name="other_year_passing" class="form-control" ></td>
+                    <td><input type="text" name="other_board_university" class="form-control" ></td>
+                    <td><input type="text" name="other_percentage_cgpa" class="form-control" ></td>
+                    <td><input type="file" name="other_document" class="form-control-file" accept=".pdf,.doc,.docx" ></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Programme Details Card -->
+        <div class="card mt-3">
+          <div class="card-header">
+            <div class="row">
+              <div class="col">
+                Programme Details
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+            <div class="col-md-4">
+                <div class="form-group">
+                  <input type="text" name="course_type" class="form-control" placeholder="course_type" required>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input type="text" name="faculty" class="form-control" placeholder="Faculty" required>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input type="text" name="course" class="form-control" placeholder="Course" required>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input type="text" name="stream" class="form-control" placeholder="Stream" required>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                    <select name="year" class="form-control" required>
+                        <option value="">Select Year</option>
+                        <?php
+                        $currentYear = date("Y");
+                        for ($year = $currentYear; $year >= 1900; $year--) {
+                            echo "<option value='$year'>$year</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <select name="month" class="form-control" required>
+                        <option value="">Select Month</option>
+                        <?php
+                        $months = [
+                            "01" => "January",
+                            "02" => "February",
+                            "03" => "March",
+                            "04" => "April",
+                            "05" => "May",
+                            "06" => "June",
+                            "07" => "July",
+                            "08" => "August",
+                            "09" => "September",
+                            "10" => "October",
+                            "11" => "November",
+                            "12" => "December"
+                        ];
+                        foreach ($months as $num => $name) {
+                            echo "<option value='$num'>$name</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input type="text" name="mode_of_study" class="form-control" placeholder="Mode of Study" required>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <select name="hostel_facility" class="form-control" required>
+                    <option value="">Hostel Facility?</option>
+                    <option value="1">Yes</option>
+                    <option value="0">No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input type="text" name="application_fees" class="form-control" placeholder="Application Fees" required>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input type="text" name="duration" class="form-control" placeholder="Duration" required>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input type="text" name="total_fees" class="form-control" placeholder="Total Fees" required>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input type="text" name="paying_fees" class="form-control" placeholder="Paying Fees" required>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary mt-3">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
+  
+
+
 
   <!-- Bootstrap JS and dependencies -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -318,6 +660,13 @@ $conn->close();
       this.value = '';
     });
   </script>
-
+<script>
+  function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('overlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+  }
+</script>
 </body>
 </html>
