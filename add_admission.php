@@ -172,8 +172,7 @@ function handle_upload($file_field, $upload_dir, $root_dir) {
   // This is just a placeholder for demonstration purposes
   return ""; // Placeholder return
 }
-  }
-}
+  
 ?>
 <!DOCTYPE html>
 <html lang="en">
