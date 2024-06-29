@@ -108,27 +108,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $total_fees = mysqli_real_escape_string($conn, $_POST['total_fees']);
     $paying_fees = mysqli_real_escape_string($conn, $_POST['paying_fees']);
 
-    // Function to handle document uploads
-    function handle_upload($file_input_name, $target_dir, $root_dir) {
+    function handle_upload($file_input_name, $target_dir, $root_dir, $file_type) {
       if ($_FILES[$file_input_name]['size'] != 0 && $_FILES[$file_input_name]['error'] == 0 && !empty($_FILES[$file_input_name])) {
           $temp_name = $_FILES[$file_input_name]["tmp_name"];
-          $extension = pathinfo($_FILES[$file_input_name]["name"], PATHINFO_EXTENSION);
-          $filename = uniqid() . '.' . strtolower($extension);
-          $target_path = $root_dir . '/' . $target_dir . $filename;
-          if (move_uploaded_file($temp_name, $target_path)) {
-              return $target_dir . $filename;
+          $file_info = pathinfo($_FILES[$file_input_name]["name"]);
+          $extension = strtolower($file_info['extension']);
+          
+          // Check if it's an image or document based on file type
+          if ($file_type == 'image') {
+              $allowed_extensions = array('jpg', 'jpeg', 'png', 'gif');
+              $allowed_mime_types = array('image/jpeg', 'image/png', 'image/gif');
+              $upload_dir = $root_dir . 'images/';
+          } elseif ($file_type == 'document') {
+              $allowed_extensions = array('pdf', 'doc', 'docx', 'txt');
+              $allowed_mime_types = array('application/pdf', 'application/msword', 'text/plain');
+              $upload_dir = $root_dir . 'documents/';
+          } else {
+              return ''; // Invalid file type
           }
+  
+          // Validate extension and MIME type
+          if (!in_array($extension, $allowed_extensions) || !in_array($_FILES[$file_input_name]['type'], $allowed_mime_types)) {
+              return ''; // Invalid file extension or MIME type
+          }
+  
+          $filename = uniqid() . '.' . $extension;
+          $target_path = $upload_dir . $filename;
+  
+          if (move_uploaded_file($temp_name, $target_path)) {
+              return $target_path; // Return the full path to the uploaded file
+          } else {
+              // Handle move_uploaded_file failure (e.g., check directory permissions)
+              error_log("Failed to move uploaded file: $temp_name to $target_path");
+          }
+      } else {
+          // Handle upload conditions not met (e.g., file size is 0)
+          return '';
       }
       return '';
   }
+  $root_dir = $_SERVER['DOCUMENT_ROOT'] . '/tnscpe1/';
 
-  $root_dir = $_SERVER['DOCUMENT_ROOT'] . '/admin/';
-  $image = handle_upload('image', 'upload/images/', $root_dir);
-  $secondary_document = handle_upload('secondary_document', 'upload/documents/', $root_dir);
-  $senior_secondary_document = handle_upload('senior_secondary_document', 'upload/documents/', $root_dir);
-  $graduation_document = handle_upload('graduation_document', 'upload/documents/', $root_dir);
-  $post_graduation_document = handle_upload('post_graduation_document', 'upload/documents/', $root_dir);
-  $other_document = handle_upload('other_document', 'upload/documents/', $root_dir);
+  // Handle image upload into admin/images/
+  $image = handle_upload('image', 'images/', $root_dir, 'image');
+  
+  // Handle document uploads into admin/documents/
+  $secondary_document = handle_upload('secondary_document', 'documents/', $root_dir, 'document');
+  $senior_secondary_document = handle_upload('senior_secondary_document', 'documents/', $root_dir, 'document');
+  $graduation_document = handle_upload('graduation_document', 'documents/', $root_dir, 'document');
+  $post_graduation_document = handle_upload('post_graduation_document', 'documents/', $root_dir, 'document');
+  $other_document = handle_upload('other_document', 'documents/', $root_dir, 'document');
+    
             $sql = "INSERT INTO admission (candidate_name, image, fathers_name, mothers_name, dob, gender, category_id, id_proof_type, id_proof_no, employeed, center_id, contact_number, email, fathers_contact_number, mothers_contact_number, country, nationality, state, city, address, pincode, secondary_year_passing, secondary_board_university, secondary_percentage_cgpa, secondary_document, senior_secondary_year_passing, senior_secondary_board_university, senior_secondary_percentage_cgpa, senior_secondary_document, graduation_year_passing, graduation_board_university, graduation_percentage_cgpa, graduation_document, post_graduation_year_passing, post_graduation_board_university, post_graduation_percentage_cgpa, post_graduation_document, other_year_passing, other_board_university, other_percentage_cgpa, other_document, course_type, faculty, course, stream, year,month, mode_of_study, hostel_facility, application_fees, duration, total_fees, paying_fees) 
             VALUES ('$candidate_name', '$upload_image', '$fathers_name', '$mothers_name', '$dob', '$gender', '$category_id', '$id_proof_type', '$id_proof_no', '$employeed', '$center_id', '$contact_number', '$email', '$fathers_contact_number', '$mothers_contact_number', '$country', '$nationality', '$state', '$city', '$address', '$pincode', '$secondary_year_passing', '$secondary_board_university', '$secondary_percentage_cgpa', '$secondary_document', '$senior_secondary_year_passing', '$senior_secondary_board_university', '$senior_secondary_percentage_cgpa', '$senior_secondary_document', '$graduation_year_passing', '$graduation_board_university', '$graduation_percentage_cgpa', '$graduation_document', '$post_graduation_year_passing', '$post_graduation_board_university', '$post_graduation_percentage_cgpa', '$post_graduation_document', '$other_year_passing', '$other_board_university', '$other_percentage_cgpa', '$other_document', '$course_type', '$faculty', '$course', '$stream', '$year','$month', '$mode_of_study', '$hostel_facility', '$application_fees', '$duration', '$total_fees', '$paying_fees')";
 
