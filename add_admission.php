@@ -142,7 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           $upload_image = $target_dir . $filename;
   
           // Handle document uploads in the admin directory
-          $admin_dir = "upload/admin/"; // Adjust as needed
+          $admin_dir = "upload/documents/"; // Adjust as needed
           $root_dir = $_SERVER['DOCUMENT_ROOT'] . '/admin/' . $admin_dir;
   
           $secondary_document = handle_upload('secondary_document', $admin_dir, $root_dir);
