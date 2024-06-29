@@ -108,52 +108,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $total_fees = mysqli_real_escape_string($conn, $_POST['total_fees']);
     $paying_fees = mysqli_real_escape_string($conn, $_POST['paying_fees']);
 
- // Check if the image file is uploaded and valid
-if ($_FILES['image']['size'] != 0 && $_FILES['image']['error'] == 0 && !empty($_FILES['image'])) {
-  // Process image upload
-  $target_dir = "upload/images/"; // Adjust to your project structure relative to the document root
-  $temp_name = $_FILES["image"]["tmp_name"];
-  $extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
-  $filename = uniqid() . '.' . strtolower($extension); // Unique filename
-  $target_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/' . $target_dir;
-  $full_path_image = $target_path . $filename;
-
-  if (move_uploaded_file($temp_name, $full_path_image)) {
-      $upload_image = $target_dir . $filename;
-
-      // Handle document upload if image upload succeeds
-      if ($_FILES['document']['size'] != 0 && $_FILES['document']['error'] == 0 && !empty($_FILES['document'])) {
-          $temp_doc_name = $_FILES["document"]["tmp_name"];
-          $extension_doc = pathinfo($_FILES["document"]["name"], PATHINFO_EXTENSION);
-          $filename_doc = uniqid() . '.' . strtolower($extension_doc);
-          $full_path_document = $target_path . $filename_doc;
-
-          if (move_uploaded_file($temp_doc_name, $full_path_document)) {
-              $upload_document = $target_dir . $filename_doc;
+    function handle_upload($file_input_name, $target_directory, $root_directory) {
+      $upload_path = '';  // Initialize upload path
+  
+      if (isset($_FILES[$file_input_name]) && $_FILES[$file_input_name]['error'] == 0) {
+          $file_name = $_FILES[$file_input_name]['name'];
+          $temp_name = $_FILES[$file_input_name]['tmp_name'];
+          $target_path = $root_directory . '/' . $target_directory . basename($file_name);
+  
+          if (move_uploaded_file($temp_name, $target_path)) {
+              $upload_path = $target_directory . basename($file_name);
           } else {
-              // Handle document upload failure
-              echo "Failed to upload document.";
-              // You might want to handle this error appropriately
+              $upload_path = "Error: Failed to move file.";
           }
       } else {
-          $upload_document = ""; // No document uploaded or error occurred
+          $upload_path = ''; // No file uploaded or error occurred
       }
-  } else {
-      // Handle image upload failure
-      echo "Failed to upload image.";
-      // You might want to handle this error appropriately
+  
+      return $upload_path;
   }
-}
-
-// Database connection and insertion query
-$root_dir = $_SERVER['DOCUMENT_ROOT'] . '/admin/';
-$image = handle_upload('image', 'upload/images/', $root_dir);
-$secondary_document = handle_upload('secondary_document', 'upload/documents/', $root_dir);
-$senior_secondary_document = handle_upload('senior_secondary_document', 'upload/documents/', $root_dir);
-$graduation_document = handle_upload('graduation_document', 'upload/documents/', $root_dir);
-$post_graduation_document = handle_upload('post_graduation_document', 'upload/documents/', $root_dir);
-$other_document = handle_upload('other_document', 'upload/documents/', $root_dir);
-
+  
+  // Check if the image file is uploaded and valid
+  if ($_FILES['image']['size'] != 0 && $_FILES['image']['error'] == 0 && !empty($_FILES['image'])) {
+      // Process image upload
+      $target_dir = "upload/images/"; // Same target directory for both image and documents
+      $temp_name = $_FILES["image"]["tmp_name"];
+      $extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
+      $filename = uniqid() . '.' . strtolower($extension); // Unique filename
+      $target_path = $_SERVER['DOCUMENT_ROOT'] . '/admin/' . $target_dir;
+      $full_path_image = $target_path . $filename;
+  
+      if (move_uploaded_file($temp_name, $full_path_image)) {
+          $upload_image = $target_dir . $filename;
+  
+          // Handle document uploads in the admin directory
+          $admin_dir = "upload/admin/"; // Adjust as needed
+          $root_dir = $_SERVER['DOCUMENT_ROOT'] . '/admin/' . $admin_dir;
+  
+          $secondary_document = handle_upload('secondary_document', $admin_dir, $root_dir);
+          $senior_secondary_document = handle_upload('senior_secondary_document', $admin_dir, $root_dir);
+          $graduation_document = handle_upload('graduation_document', $admin_dir, $root_dir);
+          $post_graduation_document = handle_upload('post_graduation_document', $admin_dir, $root_dir);
+          $other_document = handle_upload('other_document', $admin_dir, $root_dir);
 $sql = "INSERT INTO admission (candidate_name, image, fathers_name, mothers_name, dob, gender, category_id, id_proof_type, id_proof_no, employeed, center_id, contact_number, email, fathers_contact_number, mothers_contact_number, country, nationality, state, city, address, pincode, secondary_year_passing, secondary_board_university, secondary_percentage_cgpa, secondary_document, senior_secondary_year_passing, senior_secondary_board_university, senior_secondary_percentage_cgpa, senior_secondary_document, graduation_year_passing, graduation_board_university, graduation_percentage_cgpa, graduation_document, post_graduation_year_passing, post_graduation_board_university, post_graduation_percentage_cgpa, post_graduation_document, other_year_passing, other_board_university, other_percentage_cgpa, other_document, course_type, faculty, course, stream, year, month, mode_of_study, hostel_facility, application_fees, duration, total_fees, paying_fees) 
       VALUES ('$candidate_name', '$upload_image', '$fathers_name', '$mothers_name', '$dob', '$gender', '$category_id', '$id_proof_type', '$id_proof_no', '$employeed', '$center_id', '$contact_number', '$email', '$fathers_contact_number', '$mothers_contact_number', '$country', '$nationality', '$state', '$city', '$address', '$pincode', '$secondary_year_passing', '$secondary_board_university', '$secondary_percentage_cgpa', '$secondary_document', '$senior_secondary_year_passing', '$senior_secondary_board_university', '$senior_secondary_percentage_cgpa', '$senior_secondary_document', '$graduation_year_passing', '$graduation_board_university', '$graduation_percentage_cgpa', '$graduation_document', '$post_graduation_year_passing', '$post_graduation_board_university', '$post_graduation_percentage_cgpa', '$post_graduation_document', '$other_year_passing', '$other_board_university', '$other_percentage_cgpa', '$other_document', '$course_type', '$faculty', '$course', '$stream', '$year', '$month', '$mode_of_study', '$hostel_facility', '$application_fees', '$duration', '$total_fees', '$paying_fees')";
 
@@ -177,6 +173,8 @@ function handle_upload($file_field, $upload_dir, $root_dir) {
   // You can implement this function according to your specific needs
   // This is just a placeholder for demonstration purposes
   return ""; // Placeholder return
+}
+  }
 }
 ?>
 <!DOCTYPE html>
