@@ -19,35 +19,17 @@ function getCenterName($conn, $center_code) {
 $center_code = $_GET['center_code'] ?? ''; // Get center_code from URL parameter
 $center_name = getCenterName($conn, $center_code);
 
-// Fetch categories from the database
-$sql_categories = "SELECT id, name FROM category";
-$result_categories = $conn->query($sql_categories);
+// Fetch center details including center_id
+$sql_center = "SELECT id, center_name FROM center WHERE center_name = '$center_name'";
+$result_center = $conn->query($sql_center);
 
-// Generate options for the category dropdown
-$category_options = '';
-if ($result_categories && $result_categories->num_rows > 0) {
-    while ($row = $result_categories->fetch_assoc()) {
-        $id = $row['id'];
-        $name = htmlspecialchars($row['name']);
-        $category_options .= "<option value='$id'>$name</option>";
-    }
+if ($result_center && $result_center->num_rows > 0) {
+    $row = $result_center->fetch_assoc();
+    $center_id = $row['id'];
+} else {
+    $center_id = ''; // Handle case where center_id is not found
 }
 
-// Fetch centers from the database
-$sql_centers = "SELECT id, center_name FROM center"; // Adjust table name as per your database structure
-$result_centers = $conn->query($sql_centers);
-
-// Generate options for the center dropdown
-$center_options = '';
-if ($result_centers && $result_centers->num_rows > 0) {
-    while ($row = $result_centers->fetch_assoc()) {
-        $center_id = $row['id'];
-        $center_name_db = htmlspecialchars($row['center_name']);
-        // Disable the option if it matches the center_name fetched from URL center_code
-        $disabled = ($center_name_db === $center_name) ? 'disabled' : '';
-        $center_options .= "<option value='$center_id' $disabled>$center_name_db</option>";
-    }
-}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize and validate inputs
@@ -60,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_proof_type = mysqli_real_escape_string($conn, $_POST['id_proof_type']);
     $id_proof_no = mysqli_real_escape_string($conn, $_POST['id_proof_no']);
     $employeed = mysqli_real_escape_string($conn, $_POST['employeed']);
-    $center_id = mysqli_real_escape_string($conn, $_POST['center_id']);
+    $center_id = mysqli_real_escape_string($conn, $_POST['center_id']); // Capture center_id from POST
     $contact_number = mysqli_real_escape_string($conn, $_POST['contact_number']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
     $fathers_contact_number = mysqli_real_escape_string($conn, $_POST['fathers_contact_number']);
@@ -147,6 +129,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    $post_graduation_document = handle_document_upload('post_graduation_document', $document_target_dir, $root_dir);
    $other_document = handle_document_upload('other_document', $document_target_dir, $root_dir);
 
+
+
   
 $sql = "INSERT INTO admission (candidate_name, image, fathers_name, mothers_name, dob, gender, category_id, id_proof_type, id_proof_no, employeed, center_id, contact_number, email, fathers_contact_number, mothers_contact_number, country, nationality, state, city, address, pincode, secondary_year_passing, secondary_board_university, secondary_percentage_cgpa, secondary_document, senior_secondary_year_passing, senior_secondary_board_university, senior_secondary_percentage_cgpa, senior_secondary_document, graduation_year_passing, graduation_board_university, graduation_percentage_cgpa, graduation_document, post_graduation_year_passing, post_graduation_board_university, post_graduation_percentage_cgpa, post_graduation_document, other_year_passing, other_board_university, other_percentage_cgpa, other_document, course_type, faculty, course, stream, year, month, mode_of_study, hostel_facility, application_fees, duration, total_fees, paying_fees) 
       VALUES ('$candidate_name', '$upload_image', '$fathers_name', '$mothers_name', '$dob', '$gender', '$category_id', '$id_proof_type', '$id_proof_no', '$employeed', '$center_id', '$contact_number', '$email', '$fathers_contact_number', '$mothers_contact_number', '$country', '$nationality', '$state', '$city', '$address', '$pincode', '$secondary_year_passing', '$secondary_board_university', '$secondary_percentage_cgpa', '$secondary_document', '$senior_secondary_year_passing', '$senior_secondary_board_university', '$senior_secondary_percentage_cgpa', '$senior_secondary_document', '$graduation_year_passing', '$graduation_board_university', '$graduation_percentage_cgpa', '$graduation_document', '$post_graduation_year_passing', '$post_graduation_board_university', '$post_graduation_percentage_cgpa', '$post_graduation_document', '$other_year_passing', '$other_board_university', '$other_percentage_cgpa', '$other_document', '$course_type', '$faculty', '$course', '$stream', '$year', '$month', '$mode_of_study', '$hostel_facility', '$application_fees', '$duration', '$total_fees', '$paying_fees')";
@@ -154,6 +138,7 @@ $sql = "INSERT INTO admission (candidate_name, image, fathers_name, mothers_name
 // Execute SQL query and handle success or failure
 if ($conn->query($sql) === TRUE) {
   // Redirect with success message
+  $_SESSION['action_message'] = 'New Admission record added successfully!';
   $_SESSION['admission_added'] = true;
   header("Location: admission.php?center_code=" . $_SESSION['center_code']);
   exit();
@@ -162,6 +147,10 @@ if ($conn->query($sql) === TRUE) {
   echo '<p class="alert alert-danger">Error: ' . $sql . '<br>' . $conn->error . '</p>';
 }
 }
+// Fetch success message if available
+$success_message = isset($_SESSION['action_message']) ? $_SESSION['action_message'] : '';
+unset($_SESSION['action_message']); // Clear the session variable after displaying
+
 // Close database connection
 $conn->close();
 
@@ -348,9 +337,18 @@ function handle_upload($file_field, $upload_dir, $root_dir) {
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <select name="category_id" class="form-control" required>
-                <option value="">Select Category</option>
-                <?php echo $category_options; ?>
+            <select name="gender" class="form-control" required>
+            <option value="0">Select Category</option>
+                <option value="1">General</option>
+                <option value="2">SC</option>
+                <option value="3">ST</option>
+                <option value="4">BC</option>
+                <option value="5">SBC</option>
+                <option value="6">OBC</option>
+                <option value="7">EBC</option>
+                <option value="8">PH</option>
+                <option value="9">Ex-Servicemen</option>
+                <option value="10">Other</option>
               </select>
             </div>
           </div>
@@ -384,9 +382,9 @@ function handle_upload($file_field, $upload_dir, $root_dir) {
         <div class="form-row">
           <div class="col-md-4">
             <div class="form-group">
-            <label for="center_name">Center Name:</label>
-              <input type="text" class="form-control" value="<?php echo $center_name; ?>" disabled>
-              <input type="hidden" name="center_id" value="<?php echo $center_id; ?>">
+            <label for="center_id">Center Name:</label>
+              <input type="text" class="form-control" name = "center_id" id="center_id" value="<?php echo $center_name; ?>" disabled>
+              <input type="hidden" name="center_id" id="center_id" value="<?php echo $center_id; ?>">
             </div>
           </div>
           <div class="col-md-4">

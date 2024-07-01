@@ -69,15 +69,10 @@ $url = $_SERVER['PHP_SELF'] . "?center_code=$center_code";
 // Close the database connection
 $conn->close();
 
-// Check if redirected with success parameter and display success message
-$status = isset($_GET['status']) ? $_GET['status'] : '';
-$success_message = '';
+// Fetch success message if available
+$success_message = isset($_SESSION['action_message']) ? $_SESSION['action_message'] : '';
+unset($_SESSION['action_message']); // Clear the session variable after displaying
 
-if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['admission_added']) {
-    $success_message = 'New admission record added successfully!';
-    // Unset the session variable to prevent displaying the message on subsequent page loads
-    unset($_SESSION['admission_added']);
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -207,15 +202,11 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
       </div>
 
   <div class="container">
-  <?php if (!empty($success_message)): ?>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <?php echo $success_message; ?>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-  <?php endif; ?>
-
+  <?php if (!empty($success_message)) : ?>
+            <div class="alert alert-success" role="alert">
+                <?php echo $success_message; ?>
+            </div>
+        <?php endif; ?>
 
     <div class="card">
       <div class="card-header">

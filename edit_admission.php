@@ -2,8 +2,7 @@
 session_start();
 require 'db.php'; // Ensure db.php includes your database connection
 
-$DOMAIN_URL = "https://tnscpe.graymatterworks.com/admin/";
-
+$DOMAIN_URL = "https://tnscpe.graymatterworks.com/";
 
 // Function to fetch center name by center_code
 function getCenterName($conn, $center_code) {
@@ -20,22 +19,17 @@ function getCenterName($conn, $center_code) {
 $center_code = $_GET['center_code'] ?? ''; // Get center_code from URL parameter
 $center_name = getCenterName($conn, $center_code);
 
+// Fetch center details including center_id
+$sql_center = "SELECT id, center_name FROM center WHERE center_name = '$center_name'";
+$result_center = $conn->query($sql_center);
 
-// Fetch centers from the database
-$sql_centers = "SELECT id, center_name FROM center"; // Adjust table name as per your database structure
-$result_centers = $conn->query($sql_centers);
-
-// Generate options for the center dropdown
-$center_options = '';
-if ($result_centers && $result_centers->num_rows > 0) {
-    while ($row = $result_centers->fetch_assoc()) {
-        $center_id = $row['id'];
-        $center_name_db = htmlspecialchars($row['center_name']);
-        // Disable the option if it matches the center_name fetched from URL center_code
-        $disabled = ($center_name_db === $center_name) ? 'disabled' : '';
-        $center_options .= "<option value='$center_id' $disabled>$center_name_db</option>";
-    }
+if ($result_center && $result_center->num_rows > 0) {
+    $row = $result_center->fetch_assoc();
+    $center_id = $row['id'];
+} else {
+    $center_id = ''; // Handle case where center_id is not found
 }
+
 
 $sql_admission = "SELECT * FROM admission";
 $result_admission = $conn->query($sql_admission);
@@ -233,14 +227,19 @@ $other_document = handle_document_upload('other_document', $document_target_dir,
 
   // Execute SQL query and handle success or failure
   if ($conn->query($sql) === TRUE) {
+    $_SESSION['action_message'] = 'Admission record Update successfully!';
     $_SESSION['admission_updated'] = true;
-    header("Location: admission.php?center_code=" . $_SESSION['center_code']);
+    header("Location:admission.php?admission_id=" . $admission['id'] . "&center_code=" . $_SESSION['center_code']);
     exit();
 } else {
     error_log('Error updating record: ' . $conn->error);
     echo '<p class="alert alert-danger">Error updating record: ' . $conn->error . '</p>';
 }
 }
+
+// Fetch success message if available
+$success_message = isset($_SESSION['action_message']) ? $_SESSION['action_message'] : '';
+unset($_SESSION['action_message']); // Clear the session variable after displaying
 
 // Fetch admission details based on admission_id
 $admission_id = isset($_GET['admission_id']) ? $_GET['admission_id'] : '';
@@ -390,7 +389,6 @@ $conn->close();
         </button>
       </div>
 
-      <div class="container">
   <div class="card">
     <div class="card-header">
       <div class="row">
