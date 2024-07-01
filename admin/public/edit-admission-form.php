@@ -411,7 +411,7 @@ $admission = $res[0];
                                     </div>
                                     <div class='col-md-4'>
                                         <label for="email">Email</label> <i class="text-danger asterik">*</i><?php echo isset($error['email']) ? $error['email'] : ''; ?>
-                                        <input type="email" name="email" class="form-control" placeholder="Email" required>
+                                        <input type="email" name="email" class="form-control" placeholder="Email"  value="<?php echo isset($res[0]['email']) ? $res[0]['email'] : ''; ?>" required>
                                     </div>
                                     <div class='col-md-4'>
                                         <label for="fathers_contact_number">Father's Contact Number</label> <i class="text-danger asterik">*</i>
