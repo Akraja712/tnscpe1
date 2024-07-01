@@ -2,7 +2,7 @@
 session_start();
 require 'db.php'; // Ensure db.php includes your database connection
 
-$DOMAIN_URL = "https://tnscpe.graymatterworks.com/";
+$DOMAIN_URL = "https://tnscpe.graymatterworks.com/admin/";
 
 
 // Function to fetch center name by center_code
@@ -616,12 +616,16 @@ $conn->close();
             <td><input type="text" name="secondary_percentage_cgpa" class="form-control" value="<?php echo htmlspecialchars($admission['secondary_percentage_cgpa']); ?>" required></td>
             <td>
             <div class="form-group">
-                <input type="file" name="secondary_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['secondary_document'])) echo ''; ?>>
-                <?php if (!empty($admission['secondary_document'])): ?>
-                <br>
-                <a href="<?php echo htmlspecialchars($admission['secondary_document']); ?>" target="_blank"><?php echo basename($admission['secondary_document']); ?></a>
-                <?php endif; ?>
-            </div>
+              <input type="file" name="secondary_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['secondary_document'])) echo ''; ?>>
+              <?php if (!empty($admission['secondary_document'])): ?>
+              <br>
+              <?php
+              // Assuming $domain_url is the base URL you want to prepend to the file path
+              $file_url = $DOMAIN_URL . htmlspecialchars($admission['secondary_document']);
+              ?>
+              <a href="<?php echo $file_url; ?>" target="_blank"><?php echo basename($admission['secondary_document']); ?></a>
+              <?php endif; ?>
+          </div>
             </td>
 
             </tr>
@@ -631,13 +635,17 @@ $conn->close();
               <td><input type="text" name="senior_secondary_board_university" class="form-control" value="<?php echo $admission['senior_secondary_board_university']; ?>" required></td>
               <td><input type="text" name="senior_secondary_percentage_cgpa" class="form-control" value="<?php echo $admission['senior_secondary_percentage_cgpa']; ?>" required></td>
               <td>
-            <div class="form-group">
-                <input type="file" name="senior_secondary_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['senior_secondary_document'])) echo ''; ?>>
-                <?php if (!empty($admission['senior_secondary_document'])): ?>
-                <br>
-                <a href="<?php echo htmlspecialchars($admission['senior_secondary_document']); ?>" target="_blank"><?php echo basename($admission['senior_secondary_document']); ?></a>
-                <?php endif; ?>
-            </div>
+              <div class="form-group">
+              <input type="file" name="senior_secondary_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['senior_secondary_document'])) echo ''; ?>>
+              <?php if (!empty($admission['senior_secondary_document'])): ?>
+              <br>
+              <?php
+              // Assuming $domain_url is the base URL you want to prepend to the file path
+              $file_url = $DOMAIN_URL . htmlspecialchars($admission['senior_secondary_document']);
+              ?>
+              <a href="<?php echo $file_url; ?>" target="_blank"><?php echo basename($admission['senior_secondary_document']); ?></a>
+              <?php endif; ?>
+          </div>
             </td>
             </tr>
             <tr>
@@ -646,13 +654,17 @@ $conn->close();
               <td><input type="text" name="graduation_board_university" class="form-control" value="<?php echo $admission['graduation_board_university']; ?>" ></td>
               <td><input type="text" name="graduation_percentage_cgpa" class="form-control" value="<?php echo $admission['graduation_percentage_cgpa']; ?>" ></td>
               <td>
-                <div class="form-group">
-                    <input type="file" name="graduation_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['graduation_document'])) echo ''; ?>>
-                    <?php if (!empty($admission['graduation_document'])): ?>
-                    <br>
-                    <a href="<?php echo htmlspecialchars($admission['graduation_document']); ?>" target="_blank"><?php echo basename($admission['graduation_document']); ?></a>
-                    <?php endif; ?>
-                </div>
+              <div class="form-group">
+              <input type="file" name="graduation_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['graduation_document'])) echo ''; ?>>
+              <?php if (!empty($admission['graduation_document'])): ?>
+              <br>
+              <?php
+              // Assuming $domain_url is the base URL you want to prepend to the file path
+              $file_url = $DOMAIN_URL . htmlspecialchars($admission['graduation_document']);
+              ?>
+              <a href="<?php echo $file_url; ?>" target="_blank"><?php echo basename($admission['graduation_document']); ?></a>
+              <?php endif; ?>
+          </div>
                 </td>
             </tr>
             <tr>
@@ -661,13 +673,17 @@ $conn->close();
               <td><input type="text" name="post_graduation_board_university" class="form-control" value="<?php echo $admission['post_graduation_board_university']; ?>" ></td>
               <td><input type="text" name="post_graduation_percentage_cgpa" class="form-control" value="<?php echo $admission['post_graduation_percentage_cgpa']; ?>" ></td>
               <td>
-            <div class="form-group">
-                <input type="file" name="post_graduation_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['post_graduation_document'])) echo ''; ?>>
-                <?php if (!empty($admission['post_graduation_document'])): ?>
-                <br>
-                <a href="<?php echo htmlspecialchars($admission['post_graduation_document']); ?>" target="_blank"><?php echo basename($admission['post_graduation_document']); ?></a>
-                <?php endif; ?>
-            </div>
+              <div class="form-group">
+              <input type="file" name="post_graduation_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['post_graduation_document'])) echo ''; ?>>
+              <?php if (!empty($admission['post_graduation_document'])): ?>
+              <br>
+              <?php
+              // Assuming $domain_url is the base URL you want to prepend to the file path
+              $file_url = $DOMAIN_URL . htmlspecialchars($admission['post_graduation_document']);
+              ?>
+              <a href="<?php echo $file_url; ?>" target="_blank"><?php echo basename($admission['post_graduation_document']); ?></a>
+              <?php endif; ?>
+          </div>
             </td>
             </tr>
             <tr>
@@ -676,13 +692,17 @@ $conn->close();
                     <td><input type="text" name="other_board_university" class="form-control" value="<?php echo $admission['other_board_university']; ?>" ></td>
                     <td><input type="text" name="other_percentage_cgpa" class="form-control" value="<?php echo $admission['other_percentage_cgpa']; ?>" ></td>
                     <td>
-                        <div class="form-group">
-                        <input type="file" name="other_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['other_document'])) echo ''; ?>>
-                        <?php if (!empty($admission['other_document'])): ?>
-                        <br>
-                        <a href="<?php echo htmlspecialchars($admission['other_document']); ?>" target="_blank"><?php echo basename($admission['other_document']); ?></a>
-                        <?php endif; ?>
-                    </div>
+                    <div class="form-group">
+              <input type="file" name="other_document" class="form-control-file" accept=".pdf,.doc,.docx" <?php if (!empty($admission['other_document'])) echo ''; ?>>
+              <?php if (!empty($admission['other_document'])): ?>
+              <br>
+              <?php
+              // Assuming $domain_url is the base URL you want to prepend to the file path
+              $file_url = $DOMAIN_URL . htmlspecialchars($admission['other_document']);
+              ?>
+              <a href="<?php echo $file_url; ?>" target="_blank"><?php echo basename($admission['other_document']); ?></a>
+              <?php endif; ?>
+          </div>
                     </td>
                   </tr>
                 </tbody>
