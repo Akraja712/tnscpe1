@@ -148,7 +148,7 @@ if (isset($_GET['center_code'])) {
       <div class="card-body">
         <center><h4>Center Details</h4></center>
         <br>
-        <img src="https://tnscpe.graymatterworks.com/admin/<?php echo $row['image']; ?>" class="card-img-top float-right img-fluid" alt="Center Image">
+        <img src="https://tnscpe.graymatterworks.com/admin/<?php echo $row['image']; ?>" class="card-img-top float-right img-fluid" alt="Center Image" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid #fff;">
         <p class="card-text"><strong>Center Name:</strong> <?php echo $row['center_name']; ?></p>
         <p class="card-text"><strong>Center Code:</strong> <?php echo $row['center_code']; ?></p>
         <p class="card-text"><strong>Director Name:</strong> <?php echo $row['director_name']; ?></p>
