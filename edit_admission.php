@@ -500,7 +500,7 @@ $conn->close();
     <label for="image">Photo:</label><?php echo isset($error['image']) ? $error['image'] : ''; ?>
     <input type="file" name="image" onchange="readURL(this);" accept="image/png, image/jpeg" id="image" /><br>
     <?php
-    $image_path = 'http://localhost/tnscpe1/' . $admission['image'];
+    $image_path = 'https://tnscpe.graymatterworks.com/admin/' . $admission['image'];
     ?>
     <img id="blah" src="<?php echo $image_path; ?>" alt="Uploaded Image" style="display:block; width:150px; height:200px;" />
 </div>
