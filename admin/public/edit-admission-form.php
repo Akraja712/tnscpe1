@@ -39,6 +39,19 @@ if (isset($_GET['id'])) {
     exit();
 }
 
+    // Fetch existing image and document paths
+    $sql_query = "SELECT * FROM admission WHERE id = '$ID'";
+    $db->sql($sql_query);
+    $res = $db->getResult();
+
+    if (!isset($res[0])) {
+        echo '<p class="alert alert-danger">Admission not found.</p>';
+        exit();
+    }
+
+    $admission = $res[0];
+
+
 if (isset($_POST['btnUpdate'])) {
     // Sanitize and escape all inputs
     $candidate_name = $db->escapeString($_POST['candidate_name']);
@@ -89,159 +102,187 @@ if (isset($_POST['btnUpdate'])) {
     $total_fees = $db->escapeString($_POST['total_fees']);
     $paying_fees = $db->escapeString($_POST['paying_fees']);
 
-    // Handle image upload
-    $imagePath = ''; // Initialize image path
-    if ($_FILES['image']['size'] != 0 && $_FILES['image']['error'] == 0 && !empty($_FILES['image'])) {
-        $extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
-    
-        $result = $fn->validate_image($_FILES["image"]);
-        $target_path = 'upload/images/';
-        
-        $filename = microtime(true) . '.' . strtolower($extension);
-        $full_path = $target_path . $filename;
-        if (!move_uploaded_file($_FILES["image"]["tmp_name"], $full_path)) {
-            echo '<p class="alert alert-danger">Cannot upload image.</p>';
-            exit();
-        }
-        if (!empty($old_image) && file_exists($old_image)) {
-            unlink($old_image);
-        }
-        $imagePath = $full_path;
-    }
-
-    // Handle document uploads
-    $secondaryDocumentPath = ''; // Initialize document paths
-    $seniorSecondaryDocumentPath = '';
-    $graduationDocumentPath = '';
-    $postGraduationDocumentPath = '';
-    $otherDocumentPath = '';
-
-    // Handle Secondary Document upload
-    if ($_FILES['secondary_document']['size'] != 0 && $_FILES['secondary_document']['error'] == 0 && !empty($_FILES['secondary_document'])) {
-        $result = validate_document($_FILES['secondary_document']);
-        $target_path = 'upload/documents/';
-        
-        $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["secondary_document"]["name"], PATHINFO_EXTENSION));
-        $full_path = $target_path . $filename;
-        if (!move_uploaded_file($_FILES["secondary_document"]["tmp_name"], $full_path)) {
-            echo '<p class="alert alert-danger">Cannot upload secondary document.</p>';
-            exit();
-        }
-        $secondaryDocumentPath = $full_path;
-    }
-
-    // Handle Senior Secondary Document upload
-    if ($_FILES['senior_secondary_document']['size'] != 0 && $_FILES['senior_secondary_document']['error'] == 0 && !empty($_FILES['senior_secondary_document'])) {
-        $result = validate_document($_FILES['senior_secondary_document']);
-        $target_path = 'upload/documents/';
-        
-        $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["senior_secondary_document"]["name"], PATHINFO_EXTENSION));
-        $full_path = $target_path . $filename;
-        if (!move_uploaded_file($_FILES["senior_secondary_document"]["tmp_name"], $full_path)) {
-            echo '<p class="alert alert-danger">Cannot upload senior secondary document.</p>';
-            exit();
-        }
-        $seniorSecondaryDocumentPath = $full_path;
-    }
-
-    // Handle Graduation Document upload
-    if ($_FILES['graduation_document']['size'] != 0 && $_FILES['graduation_document']['error'] == 0 && !empty($_FILES['graduation_document'])) {
-        $result = validate_document($_FILES['graduation_document']);
-        $target_path = 'upload/documents/';
-        
-        $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["graduation_document"]["name"], PATHINFO_EXTENSION));
-        $full_path = $target_path . $filename;
-        if (!move_uploaded_file($_FILES["graduation_document"]["tmp_name"], $full_path)) {
-            echo '<p class="alert alert-danger">Cannot upload graduation document.</p>';
-            exit();
-        }
-        $graduationDocumentPath = $full_path;
-    }
-
-    // Handle Post Graduation Document upload
-    if ($_FILES['post_graduation_document']['size'] != 0 && $_FILES['post_graduation_document']['error'] == 0 && !empty($_FILES['post_graduation_document'])) {
-        $result = validate_document($_FILES['post_graduation_document']);
-        $target_path = 'upload/documents/';
-        
-        $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["post_graduation_document"]["name"], PATHINFO_EXTENSION));
-        $full_path = $target_path . $filename;
-        if (!move_uploaded_file($_FILES["post_graduation_document"]["tmp_name"], $full_path)) {
-            echo '<p class="alert alert-danger">Cannot upload post graduation document.</p>';
-            exit();
-        }
-        $postGraduationDocumentPath = $full_path;
-    }
-
-    // Handle Other Document upload
-    if ($_FILES['other_document']['size'] != 0 && $_FILES['other_document']['error'] == 0 && !empty($_FILES['other_document'])) {
-        $result = validate_document($_FILES['other_document']);
-        $target_path = 'upload/documents/';
-        
-        $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["other_document"]["name"], PATHINFO_EXTENSION));
-        $full_path = $target_path . $filename;
-        if (!move_uploaded_file($_FILES["other_document"]["tmp_name"], $full_path)) {
-            echo '<p class="alert alert-danger">Cannot upload other document.</p>';
-            exit();
-        }
-        $otherDocumentPath = $full_path;
-    }
-
-    // Update SQL query including documents
-    $sql = "UPDATE admission SET 
-          candidate_name = '$candidate_name',
-          fathers_name = '$fathers_name',
-          mothers_name = '$mothers_name',
-          dob = '$dob',
-          gender = '$gender',
-          category_id = '$category_id',
-          id_proof_type = '$id_proof_type',
-          id_proof_no = '$id_proof_no',
-          employeed = '$employeed',
-          center_id = '$center_id',
-          contact_number = '$contact_number',
-          email = '$email',
-          fathers_contact_number = '$fathers_contact_number',
-          mothers_contact_number = '$mothers_contact_number',
-          country = '$country',
-          nationality = '$nationality',
-          state = '$state',
-          city = '$city',
-          address = '$address',
-          pincode = '$pincode',
-          secondary_year_passing = '$secondary_year_passing',
-          secondary_board_university = '$secondary_board_university',
-          secondary_percentage_cgpa = '$secondary_percentage_cgpa',
-          secondary_document = '$secondaryDocumentPath',
-          senior_secondary_year_passing = '$senior_secondary_year_passing',
-          senior_secondary_board_university = '$senior_secondary_board_university',
-          senior_secondary_percentage_cgpa = '$senior_secondary_percentage_cgpa',
-          senior_secondary_document = '$seniorSecondaryDocumentPath',
-          graduation_year_passing = '$graduation_year_passing',
-          graduation_board_university = '$graduation_board_university',
-          graduation_percentage_cgpa = '$graduation_percentage_cgpa',
-          graduation_document = '$graduationDocumentPath',
-          post_graduation_year_passing = '$post_graduation_year_passing',
-          post_graduation_board_university = '$post_graduation_board_university',
-          post_graduation_percentage_cgpa = '$post_graduation_percentage_cgpa',
-          post_graduation_document = '$postGraduationDocumentPath',
-          other_year_passing = '$other_year_passing',
-          other_board_university = '$other_board_university',
-          other_percentage_cgpa = '$other_percentage_cgpa',
-          other_document = '$otherDocumentPath',
-          course_type = '$course_type',
-          faculty = '$faculty',
-          course = '$course',
-          stream = '$stream',
-          year = '$year',
-          month = '$month',
-          mode_of_study = '$mode_of_study',
-          hostel_facility = '$hostel_facility',
-          application_fees = '$application_fees',
-          duration = '$duration',
-          total_fees = '$total_fees',
-          paying_fees = '$paying_fees',
-          image = '$imagePath'
-          WHERE id = '$ID'";
+      $old_image = $admission['image'];
+      $old_secondary_document = $admission['secondary_document'];
+      $old_senior_secondary_document = $admission['senior_secondary_document'];
+      $old_graduation_document = $admission['graduation_document'];
+      $old_post_graduation_document = $admission['post_graduation_document'];
+      $old_other_document = $admission['other_document'];
+  
+      // Handle image upload
+      $imagePath = $old_image;
+      if ($_FILES['image']['size'] != 0 && $_FILES['image']['error'] == 0) {
+          $extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
+  
+          $result = $fn->validate_image($_FILES["image"]);
+          $target_path = 'upload/images/';
+  
+          $filename = microtime(true) . '.' . strtolower($extension);
+          $full_path = $target_path . $filename;
+          if (move_uploaded_file($_FILES["image"]["tmp_name"], $full_path)) {
+              if (!empty($old_image) && file_exists($old_image)) {
+                  unlink($old_image);
+              }
+              $imagePath = $full_path;
+          } else {
+              echo '<p class="alert alert-danger">Cannot upload image.</p>';
+              exit();
+          }
+      }
+  
+      // Handle document uploads
+      $secondaryDocumentPath = $old_secondary_document;
+      $seniorSecondaryDocumentPath = $old_senior_secondary_document;
+      $graduationDocumentPath = $old_graduation_document;
+      $postGraduationDocumentPath = $old_post_graduation_document;
+      $otherDocumentPath = $old_other_document;
+  
+      // Secondary Document
+      if ($_FILES['secondary_document']['size'] != 0 && $_FILES['secondary_document']['error'] == 0) {
+          if (validate_document($_FILES['secondary_document'])) {
+              $target_path = 'upload/documents/';
+              $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["secondary_document"]["name"], PATHINFO_EXTENSION));
+              $full_path = $target_path . $filename;
+              if (move_uploaded_file($_FILES["secondary_document"]["tmp_name"], $full_path)) {
+                  if (!empty($old_secondary_document) && file_exists($old_secondary_document)) {
+                      unlink($old_secondary_document);
+                  }
+                  $secondaryDocumentPath = $full_path;
+              } else {
+                  echo '<p class="alert alert-danger">Cannot upload secondary document.</p>';
+                  exit();
+              }
+          }
+      }
+  
+      // Senior Secondary Document
+      if ($_FILES['senior_secondary_document']['size'] != 0 && $_FILES['senior_secondary_document']['error'] == 0) {
+          if (validate_document($_FILES['senior_secondary_document'])) {
+              $target_path = 'upload/documents/';
+              $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["senior_secondary_document"]["name"], PATHINFO_EXTENSION));
+              $full_path = $target_path . $filename;
+              if (move_uploaded_file($_FILES["senior_secondary_document"]["tmp_name"], $full_path)) {
+                  if (!empty($old_senior_secondary_document) && file_exists($old_senior_secondary_document)) {
+                      unlink($old_senior_secondary_document);
+                  }
+                  $seniorSecondaryDocumentPath = $full_path;
+              } else {
+                  echo '<p class="alert alert-danger">Cannot upload senior secondary document.</p>';
+                  exit();
+              }
+          }
+      }
+  
+      // Graduation Document
+      if ($_FILES['graduation_document']['size'] != 0 && $_FILES['graduation_document']['error'] == 0) {
+          if (validate_document($_FILES['graduation_document'])) {
+              $target_path = 'upload/documents/';
+              $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["graduation_document"]["name"], PATHINFO_EXTENSION));
+              $full_path = $target_path . $filename;
+              if (move_uploaded_file($_FILES["graduation_document"]["tmp_name"], $full_path)) {
+                  if (!empty($old_graduation_document) && file_exists($old_graduation_document)) {
+                      unlink($old_graduation_document);
+                  }
+                  $graduationDocumentPath = $full_path;
+              } else {
+                  echo '<p class="alert alert-danger">Cannot upload graduation document.</p>';
+                  exit();
+              }
+          }
+      }
+  
+      // Post Graduation Document
+      if ($_FILES['post_graduation_document']['size'] != 0 && $_FILES['post_graduation_document']['error'] == 0) {
+          if (validate_document($_FILES['post_graduation_document'])) {
+              $target_path = 'upload/documents/';
+              $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["post_graduation_document"]["name"], PATHINFO_EXTENSION));
+              $full_path = $target_path . $filename;
+              if (move_uploaded_file($_FILES["post_graduation_document"]["tmp_name"], $full_path)) {
+                  if (!empty($old_post_graduation_document) && file_exists($old_post_graduation_document)) {
+                      unlink($old_post_graduation_document);
+                  }
+                  $postGraduationDocumentPath = $full_path;
+              } else {
+                  echo '<p class="alert alert-danger">Cannot upload post graduation document.</p>';
+                  exit();
+              }
+          }
+      }
+  
+      // Other Document
+      if ($_FILES['other_document']['size'] != 0 && $_FILES['other_document']['error'] == 0) {
+          if (validate_document($_FILES['other_document'])) {
+              $target_path = 'upload/documents/';
+              $filename = microtime(true) . '.' . strtolower(pathinfo($_FILES["other_document"]["name"], PATHINFO_EXTENSION));
+              $full_path = $target_path . $filename;
+              if (move_uploaded_file($_FILES["other_document"]["tmp_name"], $full_path)) {
+                  if (!empty($old_other_document) && file_exists($old_other_document)) {
+                      unlink($old_other_document);
+                  }
+                  $otherDocumentPath = $full_path;
+              } else {
+                  echo '<p class="alert alert-danger">Cannot upload other document.</p>';
+                  exit();
+              }
+          }
+      }
+  
+      // Update the admission record
+      $sql = "UPDATE admission SET 
+              candidate_name = '$candidate_name',
+              fathers_name = '$fathers_name',
+              mothers_name = '$mothers_name',
+              dob = '$dob',
+              gender = '$gender',
+              category_id = '$category_id',
+              id_proof_type = '$id_proof_type',
+              id_proof_no = '$id_proof_no',
+              employeed = '$employeed',
+              center_id = '$center_id',
+              contact_number = '$contact_number',
+              email = '$email',
+              fathers_contact_number = '$fathers_contact_number',
+              mothers_contact_number = '$mothers_contact_number',
+              country = '$country',
+              nationality = '$nationality',
+              state = '$state',
+              city = '$city',
+              address = '$address',
+              pincode = '$pincode',
+              secondary_year_passing = '$secondary_year_passing',
+              secondary_board_university = '$secondary_board_university',
+              secondary_percentage_cgpa = '$secondary_percentage_cgpa',
+              secondary_document = '$secondaryDocumentPath',
+              senior_secondary_year_passing = '$senior_secondary_year_passing',
+              senior_secondary_board_university = '$senior_secondary_board_university',
+              senior_secondary_percentage_cgpa = '$senior_secondary_percentage_cgpa',
+              senior_secondary_document = '$seniorSecondaryDocumentPath',
+              graduation_year_passing = '$graduation_year_passing',
+              graduation_board_university = '$graduation_board_university',
+              graduation_percentage_cgpa = '$graduation_percentage_cgpa',
+              graduation_document = '$graduationDocumentPath',
+              post_graduation_year_passing = '$post_graduation_year_passing',
+              post_graduation_board_university = '$post_graduation_board_university',
+              post_graduation_percentage_cgpa = '$post_graduation_percentage_cgpa',
+              post_graduation_document = '$postGraduationDocumentPath',
+              other_year_passing = '$other_year_passing',
+              other_board_university = '$other_board_university',
+              other_percentage_cgpa = '$other_percentage_cgpa',
+              other_document = '$otherDocumentPath',
+              course_type = '$course_type',
+              faculty = '$faculty',
+              course = '$course',
+              stream = '$stream',
+              year = '$year',
+              month = '$month',
+              mode_of_study = '$mode_of_study',
+              hostel_facility = '$hostel_facility',
+              application_fees = '$application_fees',
+              duration = '$duration',
+              total_fees = '$total_fees',
+              paying_fees = '$paying_fees',
+              image = '$imagePath'
+              WHERE id = '$ID'";
 
     // Execute SQL query
     $db->sql($sql);
@@ -260,19 +301,6 @@ if (isset($_POST['btnUpdate'])) {
     }
 }
 
-// Fetch admission details for the given ID
-$sql_query = "SELECT * FROM admission WHERE id = '$ID'";
-$db->sql($sql_query);
-$res = $db->getResult();
-
-// Check if admission record exists
-if (!isset($res[0])) {
-    echo '<p class="alert alert-danger">Admission not found.</p>';
-    exit();
-}
-
-// Assuming you have fetched admission details into $admission array
-$admission = $res[0];
 
 // Example HTML form for file uploads (adjust according to your form structure)
 ?>
