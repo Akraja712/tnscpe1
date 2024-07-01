@@ -107,7 +107,7 @@ $base_url = "https://tnscpe.graymatterworks.com/admin/";
             </a>
           </li>
           <li class="nav-item">
-          <a class="nav-link" href="admission.php?center_code=<?php echo $_SESSION['center_code']; ?>"><i class="fas fa-poll"></i> Admission</a>
+            <a class="nav-link text-white" href="result.php">
               <i class="fas fa-poll"></i> Result
             </a>
           </li>

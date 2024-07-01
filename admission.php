@@ -240,7 +240,7 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
                 <th>Gender</th>
                 <th>Center Name</th>
                 <th>Employeed</th>
-                
+                <th>Action</th> <!-- New column for Edit action -->
               </tr>
             </thead>
             <tbody>
@@ -264,6 +264,10 @@ if ($status === 'success' && isset($_SESSION['admission_added']) && $_SESSION['a
                     }
                     ?>
                   </td>
+                  <td>
+                  <a href="edit_admission.php?admission_id=<?php echo $admission['id']; ?>&center_code=<?php echo $_SESSION['center_code']; ?>" class="btn btn-primary">View & Edit</a>
+
+                        </td> <!-- Edit button with link to edit.php -->
                 </tr>
               <?php endforeach; ?>
             </tbody>

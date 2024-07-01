@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $category_id = mysqli_real_escape_string($conn, $_POST['category_id']);
     $id_proof_type = mysqli_real_escape_string($conn, $_POST['id_proof_type']);
     $id_proof_no = mysqli_real_escape_string($conn, $_POST['id_proof_no']);
-    $employeed = ($_POST['employeed'] == 'Yes') ? 1 : 0;
+    $employeed = mysqli_real_escape_string($conn, $_POST['employeed']);
     $center_id = mysqli_real_escape_string($conn, $_POST['center_id']);
     $contact_number = mysqli_real_escape_string($conn, $_POST['contact_number']);
     $email = mysqli_real_escape_string($conn, $_POST['email']);
@@ -102,7 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $year = mysqli_real_escape_string($conn, $_POST['year']);
     $month = mysqli_real_escape_string($conn, $_POST['month']);
     $mode_of_study = mysqli_real_escape_string($conn, $_POST['mode_of_study']);
-    $hostel_facility = ($_POST['hostel_facility'] == 'Yes') ? 1 : 0;
+    $hostel_facility = mysqli_real_escape_string($conn, $_POST['hostel_facility']);
     $application_fees = mysqli_real_escape_string($conn, $_POST['application_fees']);
     $duration = mysqli_real_escape_string($conn, $_POST['duration']);
     $total_fees = mysqli_real_escape_string($conn, $_POST['total_fees']);
@@ -172,7 +172,7 @@ function handle_upload($file_field, $upload_dir, $root_dir) {
   // This is just a placeholder for demonstration purposes
   return ""; // Placeholder return
 }
-  
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -384,15 +384,16 @@ function handle_upload($file_field, $upload_dir, $root_dir) {
         <div class="form-row">
           <div class="col-md-4">
             <div class="form-group">
+            <label for="center_name">Center Name:</label>
               <input type="text" class="form-control" value="<?php echo $center_name; ?>" disabled>
               <input type="hidden" name="center_id" value="<?php echo $center_id; ?>">
             </div>
           </div>
           <div class="col-md-4">
-            <div class="form-group">
-              <input type="file" name="image" class="form-control-file" accept="image/*" required>
-            </div>
-          </div>
+              <label for="image">Photo:</label><?php echo isset($error['image']) ? $error['image'] : ''; ?>
+              <input type="file" name="image" onchange="readURL(this);" accept="image/png,  image/jpeg" id="image" required/><br>
+              <img id="blah" src="#" alt="" style="display:none"/>
+             </div>
         </div>
     </div>
   </div>
@@ -600,14 +601,13 @@ function handle_upload($file_field, $upload_dir, $root_dir) {
                     </select>
                 </div>
             </div>
-
-              <div class="col-md-4">
+            </div>
+            <div class="form-row">
+            <div class="col-md-4">
                 <div class="form-group">
                   <input type="text" name="mode_of_study" class="form-control" placeholder="Mode of Study" required>
                 </div>
               </div>
-            </div>
-            <div class="form-row">
               <div class="col-md-4">
                 <div class="form-group">
                   <select name="hostel_facility" class="form-control" required>
@@ -622,13 +622,13 @@ function handle_upload($file_field, $upload_dir, $root_dir) {
                   <input type="text" name="application_fees" class="form-control" placeholder="Application Fees" required>
                 </div>
               </div>
-              <div class="col-md-4">
+            </div>
+            <div class="form-row">
+            <div class="col-md-4">
                 <div class="form-group">
                   <input type="text" name="duration" class="form-control" placeholder="Duration" required>
                 </div>
               </div>
-            </div>
-            <div class="form-row">
               <div class="col-md-4">
                 <div class="form-group">
                   <input type="text" name="total_fees" class="form-control" placeholder="Total Fees" required>
@@ -695,6 +695,22 @@ function handle_upload($file_field, $upload_dir, $root_dir) {
     sidebar.classList.toggle('open');
     overlay.classList.toggle('show');
   }
+</script>
+<script>
+      function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#blah')
+                    .attr('src', e.target.result)
+                    .width(150)
+                    .height(200)
+                    .css('display', 'block');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
 </script>
 </body>
 </html>
