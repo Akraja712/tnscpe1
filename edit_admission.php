@@ -2,7 +2,7 @@
 session_start();
 require 'db.php'; // Ensure db.php includes your database connection
 
-$DOMAIN_URL = "https://tnscpe.graymatterworks.com/";
+$DOMAIN_URL = "https://tnscpe.graymatterworks.com/admin/";
 
 // Function to fetch center name by center_code
 function getCenterName($conn, $center_code) {
