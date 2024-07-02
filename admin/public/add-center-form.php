@@ -51,46 +51,65 @@ if (isset($_POST['btnAdd'])) {
         $error['password'] = " <span class='label label-danger'>Required!</span>";
     }
 
-    // Validate and process the image upload
-    if ($_FILES['image']['size'] != 0 && $_FILES['image']['error'] == 0 && !empty($_FILES['image'])) {
-        $extension = pathinfo($_FILES["image"]["name"])['extension'];
-
-        $result = $fn->validate_image($_FILES["image"]);
-        $target_path = 'upload/images/';
-
-        $filename = microtime(true) . '.' . strtolower($extension);
-        $full_path = $target_path . "" . $filename;
-
-        if (!move_uploaded_file($_FILES["image"]["tmp_name"], $full_path)) {
-            echo '<p class="alert alert-danger">Can not upload image.</p>';
-            return false;
-            exit();
+    // Function to handle image upload
+    function handle_image_upload($file_input_name, $target_dir) {
+        if ($_FILES[$file_input_name]['size'] != 0 && $_FILES[$file_input_name]['error'] == 0 && !empty($_FILES[$file_input_name])) {
+            $temp_name = $_FILES[$file_input_name]["tmp_name"];
+            $extension = pathinfo($_FILES[$file_input_name]["name"], PATHINFO_EXTENSION);
+            $filename = uniqid() . '.' . strtolower($extension);
+            $target_path = $target_dir . $filename;
+            if (move_uploaded_file($temp_name, $target_path)) {
+                return $target_dir . $filename;
+            }
         }
+        return '';
+    }
+    
+    // Function to handle document upload
+    function handle_document_upload($file_input_name, $target_dir) {
+        if ($_FILES[$file_input_name]['size'] != 0 && $_FILES[$file_input_name]['error'] == 0 && !empty($_FILES[$file_input_name])) {
+            $temp_name = $_FILES[$file_input_name]["tmp_name"];
+            $extension = pathinfo($_FILES[$file_input_name]["name"], PATHINFO_EXTENSION);
+            $filename = uniqid() . '.' . strtolower($extension);
+            $target_path = $target_dir . $filename;
+            if (move_uploaded_file($temp_name, $target_path)) {
+                return $target_dir . $filename;
+            }
+        }
+        return '';
+    }
+    
+    // Upload image
+    $image_target_dir = 'upload/images/';
+    $upload_image = handle_image_upload('image', $image_target_dir);
+    
+    // Upload documents
+    $document_target_dir = 'upload/pdf/';
+    $pdf_1 = handle_document_upload('pdf_1', $document_target_dir);
+    $pdf_2 = handle_document_upload('pdf_2', $document_target_dir);
+    $pdf_3 = handle_document_upload('pdf_3', $document_target_dir);
 
-        $upload_image = 'upload/images/' . $filename;
-        $sql = "INSERT INTO center (center_name, image, center_code, director_name, mobile_number, whatsapp_number, email_id, institute_address, city, state, country,password) VALUES ('$center_name', '$upload_image','$center_code','$director_name','$mobile_number','$whatsapp_number','$email_id','$institute_address','$city','$state','$country','$password')";
+        // Database insert query
+        $sql = "INSERT INTO center (center_name, image, center_code, director_name, mobile_number, whatsapp_number, email_id, institute_address, city, state, country, password, pdf_1, pdf_2, pdf_3) VALUES ('$center_name', '$upload_image', '$center_code', '$director_name', '$mobile_number', '$whatsapp_number', '$email_id', '$institute_address', '$city', '$state', '$country', '$password', '$pdf_1', '$pdf_2', '$pdf_3')";
+
+        // Execute query
         $db->sql($sql);
-    } else {
-        // Image is not uploaded or empty, insert only the name
-        $sql = "INSERT INTO center (center_name, center_code, director_name, mobile_number, whatsapp_number, email_id, institute_address, city, state, country,password) VALUES ('$center_name','$center_code','$director_name','$mobile_number','$whatsapp_number','$email_id','$institute_address','$city','$state','$country','$password')";
-        $db->sql($sql);
+        $result = $db->getResult();
+    
+        // Check result and set the error message
+        if (!empty($result)) {
+            $result = 0;
+        } else {
+            $result = 1;
+        }
+    
+        if ($result == 1) {
+            $error['add_slide'] = "<section class='content-header'><span class='label label-success'>Center Added Successfully</span></section>";
+        } else {
+            $error['add_slide'] = "<span class='label label-danger'>Failed</span>";
+        }
     }
-
-    $result = $db->getResult();
-    if (!empty($result)) {
-        $result = 0;
-    } else {
-        $result = 1;
-    }
-
-    if ($result == 1) {
-        $error['add_slide'] = "<section class='content-header'>
-                                            <span class='label label-success'>Center Added Successfully</span> </section>";
-    } else {
-        $error['add_slide'] = " <span class='label label-danger'>Failed</span>";
-    }
-}
-?>
+    ?>
 
 <section class="content-header">
     <h1>Add Center <small><a href='center.php'> <i class='fa fa-angle-double-left'></i>&nbsp;&nbsp;&nbsp;Back to Center</a></small></h1>
@@ -174,12 +193,24 @@ if (isset($_POST['btnAdd'])) {
                             <br>
                             <div class="row">
                                 <div class="form-group">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                         <label for="image">Photo</label> <i class="text-danger asterik">*</i><?php echo isset($error['image']) ? $error['image'] : ''; ?>
                                         <input type="file" name="image" onchange="readURL(this);" accept="image/png,  image/jpeg" id="image" required/><br>
                                         <img id="blah" src="#" alt="" style="display:none"/>
                                     </div>
+                                <div class="col-md-3">
+                                    <label for="exampleInputEmail1">Pdf File 1</label><i class="text-danger asterik">*</i><?php echo isset($error['pdf_1']) ? $error['pdf_1'] : ''; ?>
+                                    <input type="file" class="form-control" name="pdf_1" accept="application/pdf" required>
                                 </div>
+                                <div class="col-md-3">
+                                    <label for="exampleInputEmail1">Pdf File 2</label><i class="text-danger asterik">*</i><?php echo isset($error['pdf_file']) ? $error['pdf_2'] : ''; ?>
+                                    <input type="file" class="form-control" name="pdf_2" accept="application/pdf" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="exampleInputEmail1">Pdf File 3</label><i class="text-danger asterik">*</i><?php echo isset($error['pdf_file']) ? $error['pdf_3'] : ''; ?>
+                                    <input type="file" class="form-control" name="pdf_3" accept="application/pdf" required>
+                                </div>
+                            </div>
                             </div>
                         </div>
         

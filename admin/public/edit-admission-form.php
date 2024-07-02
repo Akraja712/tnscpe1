@@ -299,6 +299,11 @@ if (isset($_POST['btnUpdate'])) {
     } else {
         $error['update_slide'] = " <span class='label label-danger'>Failed to update</span>";
     }
+      // Fetch updated data
+      $sql_query = "SELECT * FROM `admission` WHERE id = '$ID'";
+      $db->sql($sql_query);
+      $res = $db->getResult();
+      $admission = $res[0];
 }
 
 
