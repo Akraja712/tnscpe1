@@ -69,6 +69,21 @@ if (isset($_GET['center_code'])) {
       padding: 20px;
       max-width: 100%;
     }
+    .highlight-section {
+      background-color: #f8f9fa;
+      padding: 20px;
+      border: 2px solid #343a40;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .highlight-section h5 {
+      font-weight: bold;
+    }
+    .highlight-section p {
+      margin: 5px 0;
+      font-size: 1.2em;
+    }
     @media (max-width: 768px) {
       #sidebar {
         position: fixed;
@@ -128,8 +143,8 @@ if (isset($_GET['center_code'])) {
       </div>
     </nav>
 
-    <!-- Main content -->
-    <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+   <!-- Main content -->
+   <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
       <!-- Menu toggle button for mobile -->
       <div class="d-flex justify-content-between align-items-center bg-dark p-3 d-md-none">
         <div class="d-flex align-items-center">
@@ -140,35 +155,96 @@ if (isset($_GET['center_code'])) {
           <i class="fas fa-bars"></i>
         </button>
       </div>
-  <div class="container">
-    <div class="card">
-      <div class="card-header">
-        Center Profile
+      <div class="container">
+        <div class="card">
+          <div class="card-header">
+            Center Profile
+          </div>
+          <div class="card-body">
+            <center><h4>Center Details</h4></center>
+            <br>
+            <div class="text-center mb-3">
+              <img src="https://tnscpe.graymatterworks.com/admin/<?php echo $row['image']; ?>" class="img-fluid" alt="Center Image" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid #fff;">
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <tbody>
+                  <tr>
+                    <th scope="row">Center Name</th>
+                    <td><?php echo $row['center_name']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Center Code</th>
+                    <td><?php echo $row['center_code']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Director Name</th>
+                    <td><?php echo $row['director_name']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Mobile Number</th>
+                    <td><?php echo $row['mobile_number']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Whatsapp Number</th>
+                    <td><?php echo $row['whatsapp_number']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Email ID</th>
+                    <td><?php echo $row['email_id']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Institute Address</th>
+                    <td><?php echo $row['institute_address']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">City</th>
+                    <td><?php echo $row['city']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">State</th>
+                    <td><?php echo $row['state']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Country</th>
+                    <td><?php echo $row['country']; ?></td>
+                  </tr>
+                  <tr>
+                    <th scope="row"><i class="fas fa-file-pdf"></i> &nbsp;&nbsp;PDF File 1</th>
+                    <td><?php echo basename($row['pdf_1']); ?> <a href="https://tnscpe.graymatterworks.com/admin/<?php echo $row['pdf_1']; ?>" target="_blank">View</a></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">   <i class="fas fa-file-pdf"></i> &nbsp;&nbsp;PDF File 2</th>
+                    <td><?php echo basename($row['pdf_2']); ?> <a href="https://tnscpe.graymatterworks.com/admin/<?php echo $row['pdf_2']; ?>" target="_blank">View</a></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">   <i class="fas fa-file-pdf"></i> &nbsp;&nbsp;PDF File 3</th>
+                    <td><?php echo basename($row['pdf_3']); ?> <a href="https://tnscpe.graymatterworks.com/admin/<?php echo $row['pdf_3']; ?>" target="_blank">View</a></td>
+                  </tr>
+                </tbody>
+              </table>
+              <center><h4>Bank Details:</h4></center>
+              <br>
+              <div class="highlight-section">
+          <h5>INDIAN BANK, DHARMAPURI</h5>
+          <p><strong>TNSCPE EDUCATIONAL PVT. LTD.</strong></p>
+          <p><strong>AC NO:</strong> 7760213311</p>
+          <p><strong>IFSC CODE:</strong> IDIB000D016</p>
+          <p><strong>Contact:</strong> 9600487091</p>
+        </div>
+
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <center><h4>Center Details</h4></center>
-        <br>
-        <img src="https://tnscpe.graymatterworks.com/admin/<?php echo $row['image']; ?>" class="card-img-top float-right img-fluid" alt="Center Image" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid #fff;">
-        <p class="card-text"><strong>Center Name:</strong> <?php echo $row['center_name']; ?></p>
-        <p class="card-text"><strong>Center Code:</strong> <?php echo $row['center_code']; ?></p>
-        <p class="card-text"><strong>Director Name:</strong> <?php echo $row['director_name']; ?></p>
-        <p class="card-text"><strong>Mobile Number:</strong> <?php echo $row['mobile_number']; ?></p>
-        <p class="card-text"><strong>Whatsapp Number:</strong> <?php echo $row['whatsapp_number']; ?></p>
-        <p class="card-text"><strong>Email ID:</strong> <?php echo $row['email_id']; ?></p>
-        <p class="card-text"><strong>Institude Address:</strong> <?php echo $row['institute_address']; ?></p>
-        <p class="card-text"><strong>City:</strong> <?php echo $row['city']; ?></p>
-        <p class="card-text"><strong>State:</strong> <?php echo $row['state']; ?></p>
-        <p class="card-text"><strong>Country:</strong> <?php echo $row['country']; ?></p>
-        <!-- Additional details as needed -->
-      </div>
-    </div>
+    </main>
   </div>
+</div>
 
 <!-- Bootstrap JS and dependencies -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
 
 <!-- JavaScript for sidebar toggle -->
 <script>
