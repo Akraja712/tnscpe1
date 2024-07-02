@@ -211,16 +211,44 @@ if (isset($_GET['center_code'])) {
                   </tr>
                   <tr>
                     <th scope="row"><i class="fas fa-file-pdf"></i> &nbsp;&nbsp;PDF File 1</th>
-                    <td><?php echo basename($row['pdf_1']); ?> <a href="https://tnscpe.graymatterworks.com/admin/<?php echo $row['pdf_1']; ?>" target="_blank">View</a></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">   <i class="fas fa-file-pdf"></i> &nbsp;&nbsp;PDF File 2</th>
-                    <td><?php echo basename($row['pdf_2']); ?> <a href="https://tnscpe.graymatterworks.com/admin/<?php echo $row['pdf_2']; ?>" target="_blank">View</a></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">   <i class="fas fa-file-pdf"></i> &nbsp;&nbsp;PDF File 3</th>
-                    <td><?php echo basename($row['pdf_3']); ?> <a href="https://tnscpe.graymatterworks.com/admin/<?php echo $row['pdf_3']; ?>" target="_blank">View</a></td>
-                  </tr>
+                    <td>
+                        <?php
+                        if (!empty($row['pdf_1'])) {
+                            echo basename($row['pdf_1']);
+                            echo ' <a href="https://tnscpe.graymatterworks.com/admin/' . $row['pdf_1'] . '" target="_blank">View</a>';
+                        } else {
+                            echo "No PDF file available";
+                        }
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><i class="fas fa-file-pdf"></i> &nbsp;&nbsp;PDF File 2</th>
+                    <td>
+                        <?php
+                        if (!empty($row['pdf_2'])) {
+                            echo basename($row['pdf_2']);
+                            echo ' <a href="https://tnscpe.graymatterworks.com/admin/' . $row['pdf_2'] . '" target="_blank">View</a>';
+                        } else {
+                            echo "No PDF file available";
+                        }
+                        ?>
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row"><i class="fas fa-file-pdf"></i> &nbsp;&nbsp;PDF File 3</th>
+                    <td>
+                        <?php
+                        if (!empty($row['pdf_3'])) {
+                            echo basename($row['pdf_3']);
+                            echo ' <a href="https://tnscpe.graymatterworks.com/admin/' . $row['pdf_3'] . '" target="_blank">View</a>';
+                        } else {
+                            echo "No PDF file available";
+                        }
+                        ?>
+                    </td>
+                </tr>
+
                 </tbody>
               </table>
               <center><h4>Bank Details:</h4></center>
