@@ -64,6 +64,7 @@ $conn->close(); // Close database connection
 
         .container-fluid {
             background: url('image/global.avif') no-repeat center center/cover;
+        
         }
 
         .login-box {
@@ -116,13 +117,27 @@ $conn->close(); // Close database connection
             color: white;
         }
         .title-text {
-            position: absolute;
-            top: 10px; /* Adjust top position as needed */
-            left: 50px; /* Adjust right position as needed */
+           margin-top: -550px;
             color: white;
-            font-size: 25px;
+            font-size: 35px;
             font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px; /* Adjust bottom margin for spacing */
         }
+        .alert {
+    position: absolute;
+    bottom: -30px; /* Adjust this value to position the error message */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%; /* Ensure it spans the full width of the parent */
+    text-align: center; /* Center-align the error message text */
+}
+@media (max-width: 768px) {
+    .title-text {
+        margin-top: -90vh; /* Adjust for smaller screens */
+        font-size: 6vw; /* Increase font size for smaller screens */
+    }
+}
 
     </style>
 </head>

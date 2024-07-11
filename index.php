@@ -60,16 +60,20 @@ $conn->close(); // Close database connection
             font-family: 'poppins', sans-serif;
         }
 
+
         .container-fluid {
             background: url('image/global.avif') no-repeat center center/cover;
+        
+        
         }
 
         .login-box {
             background: transparent;
             border-radius: 25px; /* Adjust border-radius to increase the curve */
             border: 2px solid white; /* White border around the box */
-            padding: 30px;
+            padding: 20px;
             position: relative; /* Added positioning for child elements */
+            margin-top:50px;
         }
 
         label, h2 {
@@ -120,14 +124,29 @@ $conn->close(); // Close database connection
             font-size: 12px;
         }
         .title-text {
-            position: absolute;
-            top: 10px; /* Adjust top position as needed */
-            left: 50px; /* Adjust right position as needed */
-            color: white;
-            font-size: 25px;
-            font-weight: bold;
-        }
-        
+    margin-top: -100vh; /* Adjust based on your design */
+    color: white;
+    font-size: 3vw; /* Responsive font size */
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+        .alert {
+    position: absolute;
+    bottom: -30px; /* Adjust this value to position the error message */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%; /* Ensure it spans the full width of the parent */
+    text-align: center; /* Center-align the error message text */
+}
+@media (max-width: 768px) {
+    .title-text {
+        margin-top: -90vh; /* Adjust for smaller screens */
+        font-size: 6vw; /* Increase font size for smaller screens */
+    }
+}
+       
     </style>
 </head>
 <body>
@@ -155,7 +174,7 @@ $conn->close(); // Close database connection
                         <?php endif; ?>
                     </form>
                 </div>
-                <br>
+                
                 <center><p style="color: white;">OR</p></center>
                 <div class="login-info-container">
                     <a href="center-login.php" class="login-info">Center login</a>
@@ -164,8 +183,8 @@ $conn->close(); // Close database connection
         </div>
     </div>
     <div class="title-text">
-        Tamilnadu State Council of Professional Education
-    </div>
+            Tamilnadu State Council of Professional Education
+        </div>
     <script>
         // JavaScript to hide error message on page reload
         document.addEventListener('DOMContentLoaded', function() {
