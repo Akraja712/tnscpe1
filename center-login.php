@@ -71,8 +71,9 @@ $conn->close(); // Close database connection
             background: transparent;
             border-radius: 25px; /* Adjust border-radius to increase the curve */
             border: 2px solid white; /* White border around the box */
-            padding: 30px;
+            padding: 20px;
             position: relative; /* Added positioning for child elements */
+            margin-bottom: -20px;
         }
 
         label, h2 {
@@ -117,13 +118,13 @@ $conn->close(); // Close database connection
             color: white;
         }
         .title-text {
-           margin-top: -550px;
-            color: white;
-            font-size: 35px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 20px; /* Adjust bottom margin for spacing */
-        }
+    margin-top: -100vh; /* Adjust based on your design */
+    color: white;
+    font-size: 3vw; /* Responsive font size */
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
         .alert {
     position: absolute;
     bottom: -30px; /* Adjust this value to position the error message */
